@@ -1,0 +1,17 @@
+project: project_name
+git_clone: git://master_hostname/and/path
+code: kowalski
+runners:
+  user: kowalski
+  hostnames:
+    - localhost
+    - runner1
+    - runner2
+master:
+  user: kowalski
+  hostname: localhost
+  sinatra_path: ~/path/to/sinatra/app
+  main_path: ~/path/that/includes/project/on/master
+hooks:
+  before_down: "echo 'runners are going down'"
+  after_up: "echo 'runners are back up'"
