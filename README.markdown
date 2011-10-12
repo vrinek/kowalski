@@ -17,6 +17,16 @@ Kowalski is coded to be as hackable as possible, please look though the files an
 * spork to have been setup in the project
 * custom config to override the ones in the git repo (config/database.yml.kowalski and others)
 
+### TODO:
+
+* get rid of capistrano for better parallelism of remote tasks
+* support for multi-core testing
+* abstract the capistrano commands and move more customization into kowalski.yml
+* add more hooks
+* add support for testing frameworks other than RSpec
+* add support for projects other than rails apps
+* add support for SCMs other than git
+
 ### Current Kowalski limitation:
 
 * limited configuration through kowalski.yml

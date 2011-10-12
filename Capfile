@@ -2,7 +2,12 @@ require "yaml"
 CONFIG = YAML.load_file("kowalski.yml")
 
 def bundle_exec(cmd, runit = true)
-    command = "source ~/.bash_profile && cd ~/#{CONFIG["project"]} && GEM_HOME=~/.rubygems SUB_ENV=#{CONFIG["code"]} ~/.rubygems/bin/bundle exec #{cmd}"
+    command = [
+    "source ~/.bash_profile",
+    "cd ~/#{CONFIG["project"]}",
+    "GEM_HOME=~/.rubygems SUB_ENV=#{CONFIG["code"]} ~/.rubygems/bin/bundle exec #{cmd}"
+    ] * " && "
+
     return command unless runit
     run command, :shell => false
 end
@@ -19,6 +24,7 @@ def alive_hosts
     hosts = CONFIG["runners"]["hostnames"].select do |host|
         system "ping -c 1 #{host} > /dev/null"
     end
+
     puts "\nAlive runners: #{hosts * ', '}\n\n"
     return hosts
 end
