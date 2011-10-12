@@ -25,6 +25,14 @@ namespace :setup do
         run "~/prepare/setup_ruby.sh", :shell => false
     end
 
+    desc "sets up tmpfs for mysql"
+    task :tmpfs, :roles => :alive_hosts do
+        run "mkdir -p ~/prepare"
+        run "rm -f ~/prepare/setup_tmpfs.sh"
+        upload "script/distributed/setup_tmpfs.sh", "prepare/setup_tmpfs.sh", :mode => "+x", :via => :scp
+        run "~/prepare/setup_tmpfs.sh", :shell => false
+    end
+
     desc "sets up redis 2.1.5.sinit"
     task :redis, :roles => :alive_hosts do
         install_redis = [
@@ -83,5 +91,6 @@ namespace :setup do
         redis
         mongo
         project
+        tmpfs
     end
 end
