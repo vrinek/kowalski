@@ -82,4 +82,4 @@ Kill the sinatra front
 ## Tips
 
 * Spork does not need to be setup properly if you don't use it in day-to-day testing. Just install it and put all the contents from spec_helper.rb in the `Spork.preload` block. On every spec run, spork gets up (and loads the environment) and after the run is goes down so every run is fresh.
-* Write a rake namespace for each service you use (e.g. mongodb) that has an up task (mongo:up) and a down (mongo:down)
+* Write a rake namespace for each service you use (e.g. mongodb) that has an up task (mongo:up) and a down (mongo:down) ([sample](https://gist.github.com/1281295))
