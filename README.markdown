@@ -17,6 +17,14 @@ Kowalski is coded to be as hackable as possible, please look though the files an
 * spork to have been setup in the project
 * custom config to override the ones in the git repo (config/database.yml.kowalski and others)
 
+### Current Kowalski limitation:
+
+* limited configuration through kowalski.yml
+* only one runner per machine (no multi-core yet)
+* needs the tmpfs in fstab (WIP to make it optional)
+* has to be hacked to change versions of services and setup/preparation procedures
+* only RSpec is supported
+
 ### TODO:
 
 * get rid of capistrano for better parallelism of remote tasks
@@ -26,14 +34,6 @@ Kowalski is coded to be as hackable as possible, please look though the files an
 * add support for testing frameworks other than RSpec
 * add support for projects other than rails apps
 * add support for SCMs other than git
-
-### Current Kowalski limitation:
-
-* limited configuration through kowalski.yml
-* only one runner per machine (no multi-core yet)
-* needs the tmpfs in fstab (WIP to make it optional)
-* has to be hacked to change versions of services and setup/preparation procedures
-* only RSpec is supported
 
 ## Installation
 
