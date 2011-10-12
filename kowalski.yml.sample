@@ -15,3 +15,10 @@ master:
 hooks:
   before_down: "echo 'runners are going down'"
   after_up: "echo 'runners are back up'"
+  spec_folders:
+    - controllers
+    - helpers
+    - lib
+    - models
+    - routing
+    - views

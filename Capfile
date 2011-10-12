@@ -106,19 +106,7 @@ task :run_specs do
     spork.down
     spork.up
 
-    folders = []
-    folders << 'authentication' # passes
-    folders << 'controllers' # passes
-    folders << 'helpers' # passes
-    folders << 'lib' # passes
-    folders << 'mailers' # passes
-    folders << 'models' # passes
-    # folders << 'requests' # fails with HUGE output (expert sku reviews)
-    folders << 'routing' # passes
-    folders << 'uploaders' # passes
-    folders << 'views' # passes
-
-    @all_files = folders.map{|f| `find #{CONFIG["master"]["main_path"]}/#{CONFIG["project"]}/spec/#{f}/ -iname "*.rb"`.split("\n")}.flatten
+    @all_files = CONFIG["spec_folders"].map{|f| `find #{CONFIG["master"]["main_path"]}/#{CONFIG["project"]}/spec/#{f}/ -iname "*.rb"`.split("\n")}.flatten
     @all_files.map! do |file|
         file.sub(%r[#{CONFIG["master"]["main_path"]}/#{CONFIG["project"]}], "/home/#{CONFIG["runners"]["user"]}/#{CONFIG["project"]}")
     end

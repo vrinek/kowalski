@@ -27,17 +27,22 @@ Kowalski is coded to be as hackable as possible, please look though the files an
 
 ## Installation
 
+Clone Kowalski
+
     git clone git://github.com/vrinek/kowalski.git
     cd kowalski
 
-    # get the needed gems
+Get the needed gems
+
     bundle install
 
-    # setup the config
+Setup the config
+
     cp kowalski.yml.sample kowalski.yml
     {mate|vim|emacs} kowalski.yml
 
-    # start hacking the capistrano tasks
+Start hacking the capistrano tasks
+
     {mate|vim|emacs} Capfile capistrano/*
 
 ## Usage
@@ -57,6 +62,14 @@ Run the specs
 Drop all services on runners (found in Capfile) and free up the machines' resources
 
     cap down
+
+Get detailed info on all runners
+
+    cap report
+
+Get simple info on all runners
+
+    cap status
 
 Boot up the sinatra front
 
