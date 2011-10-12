@@ -1,6 +1,6 @@
-# Kowalski - distributed testing penguin
+# Kowalski - distributed testing penguin on Rails
 
-Kowalski is coded to be as hackable as possible, please read the files and hack in your needs for your project.
+Kowalski is coded to be as hackable as possible, please look though the files and hack what you need in them for your project.
 
 ### Kowalski provides:
 
@@ -14,6 +14,7 @@ Kowalski is coded to be as hackable as possible, please read the files and hack 
 * rake tasks in the project to handle all services needed for testing (MySQL, MongoDB, Redis, ...)
 * ruby and rubygems to be installed system-wide
 * binary dependencies of gems to be met (should be if runner is a developer's machine)
+* spork to have been setup properly in the project
 
 ### Current Kowalski limitation:
 
@@ -23,15 +24,22 @@ Kowalski is coded to be as hackable as possible, please read the files and hack 
 * has to be hacked to change versions of services and setup/preparation procedures
 * only RSpec is supported
 
-## Installation:
+## Installation
 
     git clone git://github.com/vrinek/kowalski.git
     cd kowalski
-    bundle install
-    cp kowalski.yml.sample kowalski.yml
-    {mate|vim|emacs} kowalski.yml Capfile capistrano/*
 
-## Usage:
+    # get the needed gems
+    bundle install
+
+    # setup the config
+    cp kowalski.yml.sample kowalski.yml
+    {mate|vim|emacs} kowalski.yml
+
+    # start hacking the capistrano tasks
+    {mate|vim|emacs} Capfile capistrano/*
+
+## Usage
 
 Set up SSH access, ruby and everything else in capistrano/setup.rb
 
@@ -56,3 +64,7 @@ Boot up the sinatra front
 Kill the sinatra front
 
     rake down
+
+## Tips
+
+* Spork does not need to be setup properly if you don't use it in day-to-day testing. Just install it and put all the contents from spec_helper.rb in the `Spork.preload` block. On every spec run, spork gets up (and loads the environment) and after the run is goes down so every run is fresh.
