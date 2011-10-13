@@ -44,11 +44,12 @@ namespace :setup do
             "echo 'export PATH=\"/home/#{CONFIG["runners"]["user"]}/src/redis-sinit/src/:$PATH\"' >> ~/.bash_profile"
         ] * " && "
 
-        cmd =  "source /home/#{CONFIG["runners"]["user"]}/.bash_profile && "
-        cmd += 'if [ "$( redis-server --version | grep \'2\\.1\\.5\\.sinit\' )" ]; '
-        cmd +=     'then echo "redis is OK"; '
-        cmd +=     "else #{install_redis}; "
-        cmd += 'fi'
+        cmd = ''
+        cmd << "source /home/#{CONFIG["runners"]["user"]}/.bash_profile && "
+        cmd << 'if [ "$( redis-server --version | grep \'2\\.1\\.5\\.sinit\' )" ]; '
+        cmd <<     'then echo "redis is OK"; '
+        cmd <<     "else #{install_redis}; "
+        cmd << 'fi'
 
         run cmd, :shell => false
     end
@@ -66,11 +67,12 @@ namespace :setup do
             "echo 'export PATH=\"/home/#{CONFIG["runners"]["user"]}/src/mongo/bin/:$PATH\"' >> ~/.bash_profile"
         ] * " && "
 
-        cmd =  "source /home/#{CONFIG["runners"]["user"]}/.bash_profile && "
-        cmd += 'if [ "$( mongod --version | grep \'1\\.6\\.5\' )" ]; '
-        cmd +=     'then echo "mongo is OK"; '
-        cmd +=     "else #{install_mongo}; "
-        cmd += 'fi'
+        cmd = ''
+        cmd << "source /home/#{CONFIG["runners"]["user"]}/.bash_profile && "
+        cmd << 'if [ "$( mongod --version | grep \''+CONFIG["services"]["mongo"]["version"].gsub(/\./, "\\.")+'\' )" ]; '
+        cmd <<     'then echo "mongo is OK"; '
+        cmd <<     "else #{install_mongo}; "
+        cmd << 'fi'
 
         run cmd, :shell => false
     end
