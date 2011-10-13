@@ -22,3 +22,17 @@ hooks:
     - models
     - routing
     - views
+services:
+  mongo:
+    version: 1.6.5
+    install:
+      - "curl -s http://downloads.mongodb.org/linux/mongodb-linux-i686-static-1.6.5.tgz > mongo.tgz"
+      - "tar zxf mongo.tgz"
+      - "rm mongo.tgz"
+      - "mv mongodb-linux-i686-static-1.6.5 mongo"
+  redis:
+    version: 2.1.5.sinit
+    install:
+      - "git clone git://github.com/ctrochalakis/redis-sinit.git"
+      - "cd redis-sinit"
+      - "make"

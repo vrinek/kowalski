@@ -38,9 +38,8 @@ namespace :setup do
         install_redis = [
             "mkdir -p /home/#{CONFIG["runners"]["user"]}/src",
             "rm -rf /home/#{CONFIG["runners"]["user"]}/src/redis-sinit",
-            "git clone git://github.com/ctrochalakis/redis-sinit.git /home/#{CONFIG["runners"]["user"]}/src/redis-sinit",
-            "cd /home/#{CONFIG["runners"]["user"]}/src/redis-sinit",
-            "make",
+            "cd /home/#{CONFIG["runners"]["user"]}/src"
+        ] + CONFIG["services"]["redis"]["install"] + [
             "echo 'export PATH=\"/home/#{CONFIG["runners"]["user"]}/src/redis-sinit/src/:$PATH\"' >> ~/.bash_profile"
         ] * " && "
 
@@ -59,11 +58,8 @@ namespace :setup do
         install_mongo = [
             "mkdir -p /home/#{CONFIG["runners"]["user"]}/src",
             "rm -rf /home/#{CONFIG["runners"]["user"]}/src/mongo",
-            "cd /home/#{CONFIG["runners"]["user"]}/src",
-            "curl -s http://downloads.mongodb.org/linux/mongodb-linux-i686-static-1.6.5.tgz > mongo.tgz",
-            "tar zxf mongo.tgz",
-            "rm mongo.tgz",
-            "mv mongodb-linux-i686-static-1.6.5 mongo",
+            "cd /home/#{CONFIG["runners"]["user"]}/src"
+        ] + CONFIG["services"]["mongo"]["install"] + [
             "echo 'export PATH=\"/home/#{CONFIG["runners"]["user"]}/src/mongo/bin/:$PATH\"' >> ~/.bash_profile"
         ] * " && "
 
