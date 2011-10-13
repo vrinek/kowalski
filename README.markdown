@@ -27,7 +27,7 @@ Kowalski is coded to be as hackable as possible, please look though the files an
 
 ### TODO:
 
-* get rid of capistrano for better parallelism of remote tasks
+* get rid of capistrano for better parallelism of remote tasks on `cap up`
 * support for multi-core testing
 * abstract the capistrano commands and move more customization into kowalski.yml
 * add more hooks
