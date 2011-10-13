@@ -45,7 +45,7 @@ namespace :setup do
 
         cmd = ''
         cmd << "source /home/#{CONFIG["runners"]["user"]}/.bash_profile && "
-        cmd << 'if [ "$( redis-server --version | grep \'2\\.1\\.5\\.sinit\' )" ]; '
+        cmd << 'if [ "$( redis-server --version | grep \''+CONFIG["services"]["redis"]["version"].gsub(/\./, "\\.")+'\' )" ]; '
         cmd <<     'then echo "redis is OK"; '
         cmd <<     "else #{install_redis}; "
         cmd << 'fi'
