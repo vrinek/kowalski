@@ -22,8 +22,9 @@ get "/#{CONFIG["project"]}/:task" do |task|
 		system "cap #{cmd} > #{filename} 2>&1"
 		system "cp #{filename} #{CONFIG["master"]["main_path"]}/logs/latest-#{cmd}.txt"
 
-		output = `cat #{filename} | sed -r "s/\\x1B\\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"`.
-			gsub(/>/, '&gt;').gsub(/</, '&lt;')
+		output = `cat #{filename} | sed -r "s/\\x1B\\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"`
+		output.gsub!(/>/, '&gt;')
+		output.gsub!(/</, '&lt;')
 
 		html = '<table style="width:100%">'
 		html << '<thead><tr>'
