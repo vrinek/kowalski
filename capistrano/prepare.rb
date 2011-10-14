@@ -40,7 +40,7 @@ namespace :prepare do
                 ssh hostname, bundle_exec("rake mysql:init_db RAILS_ENV=test", false)
                 ssh hostname, bundle_exec("rake mysql:start RAILS_ENV=test", false)
 
-                cpu_cores(hostname).times do |core|
+                (cpu_cores(hostname)/2).times do |core|
                     ssh hostname, bundle_exec("rake mysql:prepare TEST_ENV_NUMBER=#{core}", false)
                 end
             end
