@@ -170,7 +170,7 @@ task :run_specs do
                 cmd = [
                     "source ~/.bash_profile",
                     "cd ~/#{CONFIG["project"]}",
-                    "GEM_HOME=~/.rubygems SUB_ENV=#{CONFIG["code"]} ~/.rubygems/bin/bundle exec rspec --drb --drb-port 8998 --format progress #{t[:specs]}"
+                    "GEM_HOME=~/.rubygems SUB_ENV=#{CONFIG["code"]} ~/.rubygems/bin/bundle exec rspec --drb --drb-port 8998 --format progress #{t[:specs]} 2>/dev/null"
                 ] * ' && '
                 t[:results] += `ssh #{CONFIG["runners"]["user"]}@#{host} '#{cmd}'`
                 @errors += 1 unless t[:results].split("\n").last =~ /\d+ examples?, \d+ failures?/
