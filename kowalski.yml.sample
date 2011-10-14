@@ -8,7 +8,7 @@ runners:
     - runner1
     - runner2
 master:
-  user: kowalski
+  username: kowalski
   hostname: localhost
   sinatra_path: ~/path/to/sinatra/app
   main_path: ~/path/that/includes/project/on/master
