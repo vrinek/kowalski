@@ -141,7 +141,7 @@ task :run_specs do
 
     hosts = roles[:alive_hosts].map(&:host)
     @threads = []
-    batch_size = lambda { [1, @all_files.size/(hosts.size), 20].sort[1] }
+    batch_size = lambda { [1, @all_files.size/(hosts.size**1.5).to_i, 20].sort[1] }
     shifting = Mutex.new
     putting = Mutex.new
     @errors = 0
