@@ -149,7 +149,10 @@ task :run_specs do
     end
     puts "#{@all_files.size} spec_files found"
 
-    hosts = roles[:alive_hosts].map(&:host)
+    hosts = roles[:alive_hosts].map(&:host).map do |hostname|
+        (0..(cpu_cores/2 - 1)).to_a.map {|c| "#{hostname}.#{c}"}
+    end.flatten
+
     @threads = []
     batch_size = lambda { [1, @all_files.size/(hosts.size**1.5).to_i, 20].sort[1] }
     shifting = Mutex.new
@@ -157,17 +160,18 @@ task :run_specs do
     @errors = 0
 
     hosts.each do |host|
+        p host
         @threads << Thread.new do
             t = Thread.current
-            hostname = host.dup
+            hostname, core = host.split(".")
 
             Thread.new do
-                system "ssh #{CONFIG["runners"]["user"]}@#{hostname} 'source ~/.bash_profile; cd ~/#{CONFIG["project"]}; GEM_HOME=~/.rubygems ~/.rubygems/bin/bundle exec spork -p 8998 1> /dev/null'"
+                system "ssh #{CONFIG["runners"]["user"]}@#{hostname} 'source ~/.bash_profile; cd ~/#{CONFIG["project"]}; GEM_HOME=~/.rubygems ~/.rubygems/bin/bundle exec spork -p #{8998 + core.to_i} 1> /dev/null'"
             end
 
             until t[:spork_is_up]
                 sleep 0.1
-                t[:spork_is_up] = (`ssh #{CONFIG["runners"]["user"]}@#{hostname} "netstat -nl | grep 8998"`.strip != "")
+                t[:spork_is_up] = (`ssh #{CONFIG["runners"]["user"]}@#{hostname} "netstat -nl | grep #{8998 + core.to_i}"`.strip != "")
             end
 
             t[:results] = ""
@@ -180,7 +184,7 @@ task :run_specs do
                 cmd = [
                     "source ~/.bash_profile",
                     "cd ~/#{CONFIG["project"]}",
-                    "GEM_HOME=~/.rubygems SUB_ENV=#{CONFIG["code"]} ~/.rubygems/bin/bundle exec rspec --drb --drb-port 8998 --format progress #{t[:specs]} 2>/dev/null"
+                    "GEM_HOME=~/.rubygems SUB_ENV=#{CONFIG["code"]} TEST_ENV_NUMBER=#{core} ~/.rubygems/bin/bundle exec rspec --drb --drb-port #{8998 + core.to_i} --format progress #{t[:specs]} 2>/dev/null"
                 ] * ' && '
                 t[:results] += `ssh #{CONFIG["runners"]["user"]}@#{host} '#{cmd}'`
                 @errors += 1 unless t[:results].split("\n").last =~ /\d+ examples?, \d+ failures?/
