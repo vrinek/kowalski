@@ -188,7 +188,7 @@ task :run_specs do
                 ] * ' && '
                 t[:results] += `ssh #{CONFIG["runners"]["user"]}@#{hostname} '#{cmd}'`
                 @errors += 1 unless t[:results].split("\n").last =~ /\d+ examples?, \d+ failures?/
-                putting.synchronize { tablog nil, hostname, "#{t[:results].split("\n").last}" }
+                putting.synchronize { tablog nil, "#{hostname}.#{core}", "#{t[:results].split("\n").last}" }
             end
         end
     end
