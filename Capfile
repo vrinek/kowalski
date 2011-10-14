@@ -97,7 +97,7 @@ task :update, :roles => :alive_hosts do
     git_daemon.down
     git_daemon.up
 
-    run_hook :before_update
+    run_hooks :before_update
 
     run "cd ~/#{CONFIG["project"]} && git clean -f"
     run "cd ~/#{CONFIG["project"]} && git checkout -- ."
@@ -107,7 +107,7 @@ task :update, :roles => :alive_hosts do
     run "cd ~/#{CONFIG["project"]} && git submodule update"
     run "cd ~/#{CONFIG["project"]} && git reset --hard master"
 
-    run_hook :after_update
+    run_hooks :after_update
 
     git_daemon.down
 
