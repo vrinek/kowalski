@@ -23,7 +23,7 @@ namespace :prepare do
     task :sphinx, :roles => :alive_hosts do
         set_status "getting up (sphinx)"
         bundle_exec "rake sphinx:stop RAILS_ENV=test"
-        bundle_exec "rake sphinx:generate_file RAILS_ENV=test"
+        bundle_exec "rake sphinx:generate_file RAILS_ENV=test TEST_ENV_NUMBER=0"
         bundle_exec "rake sphinx:index RAILS_ENV=test"
     end
 
