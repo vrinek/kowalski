@@ -150,7 +150,7 @@ task :run_specs do
     puts "#{@all_files.size} spec_files found"
 
     hosts = roles[:alive_hosts].map(&:host).map do |hostname|
-        (0..(cpu_cores/2 - 1)).to_a.map {|c| "#{hostname}.#{c}"}
+        (0..(cpu_cores(hostname)/2 - 1)).to_a.map {|c| "#{hostname}.#{c}"}
     end.flatten
 
     @threads = []
