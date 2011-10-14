@@ -44,6 +44,7 @@ namespace :prepare do
                 end
             end
         end
-        @thread.each(&:join)
+
+        @threads.each(&:join)
     end
 end
