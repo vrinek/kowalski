@@ -166,7 +166,7 @@ task :run_specs do
             hostname, core = host.split(".")
 
             Thread.new do
-                system "ssh #{CONFIG["runners"]["user"]}@#{hostname} 'source ~/.bash_profile; cd ~/#{CONFIG["project"]}; GEM_HOME=~/.rubygems ~/.rubygems/bin/bundle exec spork -p #{8998 + core.to_i} 1> /dev/null'"
+                system "ssh #{CONFIG["runners"]["user"]}@#{hostname} 'source ~/.bash_profile; cd ~/#{CONFIG["project"]}; TEST_ENV_NUMBER=#{core} GEM_HOME=~/.rubygems ~/.rubygems/bin/bundle exec spork -p #{8998 + core.to_i} 1> /dev/null'"
             end
 
             until t[:spork_is_up]
