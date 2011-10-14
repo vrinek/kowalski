@@ -7,14 +7,16 @@ runners:
     - localhost
     - runner1
     - runner2
+  hooks:
+    after_down: "rm -rf ~/kowalski/tmp"
 master:
   username: kowalski
   hostname: localhost
   sinatra_path: ~/path/to/sinatra/app
   main_path: ~/path/that/includes/project/on/master
-hooks:
-  before_down: "echo 'runners are going down'"
-  after_up: "echo 'runners are back up'"
+  hooks:
+    before_down: "echo 'runners are going down'"
+    after_up: "echo 'runners are back up'"
   spec_folders:
     - controllers
     - helpers

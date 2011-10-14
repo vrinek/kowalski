@@ -40,7 +40,7 @@ desc "tears down all services on runners"
 task :down do
     set_status "going down..."
 
-    system CONFIG["hooks"]["before_down"] if CONFIG["hooks"]["before_down"]
+    run_hooks :before_down
 
     git_daemon.down
     spork.down
@@ -49,7 +49,7 @@ task :down do
     bundle_exec "rake mongo:stop RAILS_ENV=test"
     bundle_exec "rake redis:stop RAILS_ENV=test"
 
-    system CONFIG["hooks"]["after_down"] if CONFIG["hooks"]["after_down"]
+    run_hooks :after_down
 
     set_status "down on the ground"
 end
@@ -58,7 +58,7 @@ desc "brings up all services on runners"
 task :up do
     set_status "getting up..."
 
-    system CONFIG["hooks"]["before_up"] if CONFIG["hooks"]["before_up"]
+    run_hooks :before_up
 
     update
     run "cd ~/#{CONFIG["project"]}/config && ls *.#{CONFIG["code"]} | sed 's/\(.*\).#{CONFIG["code"]}/cp & \\1/' | sh", :shell => false
@@ -71,7 +71,7 @@ task :up do
     prepare.mysql
     prepare.sphinx
 
-    system CONFIG["hooks"]["after_up"] if CONFIG["hooks"]["after_up"]
+    run_hooks :after_up
 
     set_status "ready to ROCK"
 end
@@ -193,4 +193,9 @@ desc "updates gems on the runners (bundle install)"
 task :bundler, :roles => :alive_hosts do
     run "source ~/.bash_profile && GEM_HOME=~/.rubygems gem list | grep bundler || GEM_HOME=~/.rubygems gem install bundler -v=1.0.15 --no-ri --no-rdoc", :shell => false
     run "cd ~/#{CONFIG["project"]}; GEM_HOME=~/.rubygems ~/.rubygems/bin/bundle install | grep -v '^Using'", :shell => false
+end
+
+def run_hooks(hook)
+    system CONFIG["master"]["hooks"][hook.to_s] if CONFIG["master"]["hooks"][hook.to_s]
+    run CONFIG["remote"]["hooks"][hook.to_s] if CONFIG["remote"]["hooks"][hook.to_s]
 end
