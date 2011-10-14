@@ -29,6 +29,11 @@ def alive_hosts
     return hosts
 end
 
+def run_hooks(hook)
+    system CONFIG["master"]["hooks"][hook.to_s] if CONFIG["master"]["hooks"] && CONFIG["master"]["hooks"][hook.to_s]
+    run CONFIG["runners"]["hooks"][hook.to_s] if CONFIG["runners"]["hooks"] && CONFIG["runners"]["hooks"][hook.to_s]
+end
+
 role :alive_hosts, *alive_hosts
 set :user, CONFIG["code"]
 
@@ -193,9 +198,4 @@ desc "updates gems on the runners (bundle install)"
 task :bundler, :roles => :alive_hosts do
     run "source ~/.bash_profile && GEM_HOME=~/.rubygems gem list | grep bundler || GEM_HOME=~/.rubygems gem install bundler -v=1.0.15 --no-ri --no-rdoc", :shell => false
     run "cd ~/#{CONFIG["project"]}; GEM_HOME=~/.rubygems ~/.rubygems/bin/bundle install | grep -v '^Using'", :shell => false
-end
-
-def run_hooks(hook)
-    system CONFIG["master"]["hooks"][hook.to_s] if CONFIG["master"]["hooks"] && CONFIG["master"]["hooks"][hook.to_s]
-    run CONFIG["remote"]["hooks"][hook.to_s] if CONFIG["remote"]["hooks"] && CONFIG["remote"]["hooks"][hook.to_s]
 end
