@@ -44,6 +44,14 @@ def run_hooks(hook)
     end
 end
 
+def cpu_cores(hostname)
+    ssh hostname, "cat /proc/cpuinfo | grep processor | wc -l".strip.to_i
+end
+
+def ssh(hostname, command)
+    `ssh #{CONFIG["runners"]["user"]}@#{hostname} '#{command}'`
+end
+
 role :alive_hosts, *alive_hosts
 set :user, CONFIG["code"]
 
