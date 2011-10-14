@@ -196,6 +196,6 @@ task :bundler, :roles => :alive_hosts do
 end
 
 def run_hooks(hook)
-    system CONFIG["master"]["hooks"][hook.to_s] if CONFIG["master"]["hooks"][hook.to_s]
-    run CONFIG["remote"]["hooks"][hook.to_s] if CONFIG["remote"]["hooks"][hook.to_s]
+    system CONFIG["master"]["hooks"][hook.to_s] if CONFIG["master"]["hooks"] && CONFIG["master"]["hooks"][hook.to_s]
+    run CONFIG["remote"]["hooks"][hook.to_s] if CONFIG["remote"]["hooks"] && CONFIG["remote"]["hooks"][hook.to_s]
 end
