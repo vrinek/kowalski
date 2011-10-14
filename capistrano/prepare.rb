@@ -33,19 +33,23 @@ namespace :prepare do
 
         hosts = roles[:alive_hosts].map(&:host)
 
-        @threads = []
+        host_threads = []
         hosts.each do |hostname|
-            @threads << Thread.new do
+            host_threads << Thread.new do
                 ssh hostname, bundle_exec("rake mysql:stop RAILS_ENV=test", false)
                 ssh hostname, bundle_exec("rake mysql:init_db RAILS_ENV=test", false)
                 ssh hostname, bundle_exec("rake mysql:start RAILS_ENV=test", false)
 
-                cpu_cores(hostname).times do |core|
-                    ssh hostname, bundle_exec("rake mysql:prepare TEST_ENV_NUMBER=#{core}", false)
+                env_no_threads = []
+                env_no_threads << Thread.new do
+                    cpu_cores(hostname).times do |core|
+                        ssh hostname, bundle_exec("rake mysql:prepare TEST_ENV_NUMBER=#{core}", false)
+                    end
                 end
+                env_no_threads.each(&:join)
             end
         end
 
-        @threads.each(&:join)
+        host_threads.each(&:join)
     end
 end
