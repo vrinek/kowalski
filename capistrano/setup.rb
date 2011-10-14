@@ -35,13 +35,15 @@ namespace :setup do
 
     desc "sets up redis 2.1.5.sinit"
     task :redis, :roles => :alive_hosts do
-        install_redis = [
+        raise "There are no instructions for redis install in kowalski.yml" if CONFIG["services"]["redis"].nil? or CONFIG["services"]["redis"]["install"].empty?
+
+        install_redis = ([
             "mkdir -p /home/#{CONFIG["runners"]["user"]}/src",
             "rm -rf /home/#{CONFIG["runners"]["user"]}/src/redis-sinit",
             "cd /home/#{CONFIG["runners"]["user"]}/src"
         ] + CONFIG["services"]["redis"]["install"] + [
             "echo 'export PATH=\"/home/#{CONFIG["runners"]["user"]}/src/redis-sinit/src/:$PATH\"' >> ~/.bash_profile"
-        ] * " && "
+        ]) * " && "
 
         cmd = ''
         cmd << "source /home/#{CONFIG["runners"]["user"]}/.bash_profile && "
@@ -55,13 +57,15 @@ namespace :setup do
 
     desc "sets up mongo 1.6.5"
     task :mongo, :roles => :alive_hosts do
-        install_mongo = [
+        raise "There are no instructions for mongo install in kowalski.yml" if CONFIG["services"]["mongo"].nil? or CONFIG["services"]["mongo"]["install"].empty?
+
+        install_mongo = ([
             "mkdir -p /home/#{CONFIG["runners"]["user"]}/src",
             "rm -rf /home/#{CONFIG["runners"]["user"]}/src/mongo",
             "cd /home/#{CONFIG["runners"]["user"]}/src"
         ] + CONFIG["services"]["mongo"]["install"] + [
             "echo 'export PATH=\"/home/#{CONFIG["runners"]["user"]}/src/mongo/bin/:$PATH\"' >> ~/.bash_profile"
-        ] * " && "
+        ]) * " && "
 
         cmd = ''
         cmd << "source /home/#{CONFIG["runners"]["user"]}/.bash_profile && "
