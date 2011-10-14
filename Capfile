@@ -118,7 +118,6 @@ end
 desc "runs the specs on the runners"
 task :run_specs do
     spork.down
-    spork.up
 
     @all_files = CONFIG["spec_folders"].map{|f| `find #{CONFIG["master"]["main_path"]}/#{CONFIG["project"]}/spec/#{f}/ -iname "*.rb"`.split("\n")}.flatten
     @all_files.map! do |file|
@@ -137,6 +136,15 @@ task :run_specs do
         @threads << Thread.new do
             t = Thread.current
             hostname = host.dup
+
+            Thread.new do
+                system "ssh #{CONFIG["runners"]["user"]}@#{hostname} 'source ~/.bash_profile; cd ~/#{CONFIG["project"]}; GEM_HOME=~/.rubygems ~/.rubygems/bin/bundle exec spork -p 8998 1> /dev/null'"
+            end
+
+            until t[:spork_is_up]
+                sleep 0.1
+                t[:spork_is_up] = (`ssh #{CONFIG["runners"]["user"]}@#{hostname} "netstat -nl | grep 8998"`.strip != "")
+            end
 
             t[:results] = ""
             t[:results] += "\n===============================\n"
@@ -171,26 +179,6 @@ task :run_specs do
 end
 
 namespace :spork do
-    desc "fires up spork on the runners"
-    task :up, :roles => :alive_hosts do
-        @waiting = []
-        roles[:alive_hosts].map(&:host).each do |hostname|
-            Thread.new do
-                system "ssh #{CONFIG["runners"]["user"]}@#{hostname} 'source ~/.bash_profile; cd ~/#{CONFIG["project"]}; GEM_HOME=~/.rubygems ~/.rubygems/bin/bundle exec spork -p 8998 1> /dev/null'"
-            end
-
-            @waiting << Thread.new do
-                Thread.current[:spork_is_up] = false
-                until Thread.current[:spork_is_up]
-                    sleep 0.1
-                    Thread.current[:spork_is_up] = (`ssh #{CONFIG["runners"]["user"]}@#{hostname} "netstat -nl | grep 8998"`.strip != "")
-                end
-            end
-        end
-
-        @waiting.each(&:join)
-    end
-
     desc "tears down spork"
     task :down, :roles => :alive_hosts do
         run 'pid="$( ps x | grep spork | grep -v grep | awk \'{print $1}\' )"; if [ "$pid" ]; then kill $pid; else echo "No spork running"; fi'
