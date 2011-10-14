@@ -61,6 +61,9 @@ task :up do
     system CONFIG["hooks"]["before_up"] if CONFIG["hooks"]["before_up"]
 
     update
+    run "cd ~/#{CONFIG["project"]}/config && ls *.#{CONFIG["code"]} | sed 's/\(.*\).#{CONFIG["code"]}/cp & \1/' | sh"
+    run "mkdir -p ~/.redis-temp"
+
     bundler
     prepare.sitemaps
     prepare.mongo
@@ -85,9 +88,6 @@ task :update, :roles => :alive_hosts do
     run "cd ~/#{CONFIG["project"]} && git pull --rebase"
     run "cd ~/#{CONFIG["project"]} && git submodule update"
     run "cd ~/#{CONFIG["project"]} && git reset --hard master"
-
-    run "cd ~/#{CONFIG["project"]}/config && ls *.#{CONFIG["code"]} | sed 's/\(.*\).#{CONFIG["code"]}/mv & \1/' | sh"
-    run "mkdir -p ~/.redis-temp"
 
     git_daemon.down
 end
