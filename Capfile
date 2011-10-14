@@ -34,7 +34,14 @@ def run_hooks(hook)
         puts "    [local] #{cmd}"
         system cmd
     end
-    run CONFIG["runners"]["hooks"][hook.to_s] if CONFIG["runners"]["hooks"] && CONFIG["runners"]["hooks"][hook.to_s]
+
+    if CONFIG["runners"]["hooks"] && cmd = CONFIG["runners"]["hooks"][hook.to_s]
+        if cmd =~ /^(thor|rake) /
+            bundle_exec cmd
+        else
+            run cmd
+        end
+    end
 end
 
 role :alive_hosts, *alive_hosts
@@ -69,7 +76,6 @@ task :up do
     run_hooks :before_up
 
     update
-    run "cd ~/#{CONFIG["project"]}/config && ls *.#{CONFIG["code"]} | sed 's/\(.*\).#{CONFIG["code"]}/cp & \\1/' | sh", :shell => false
     run "mkdir -p ~/.redis-temp"
 
     bundler
@@ -86,8 +92,12 @@ end
 
 desc "updates #{CONFIG["project"]} (git pull)"
 task :update, :roles => :alive_hosts do
+    set_status "updating..."
+
     git_daemon.down
     git_daemon.up
+
+    run_hook :before_update
 
     run "cd ~/#{CONFIG["project"]} && git clean -f"
     run "cd ~/#{CONFIG["project"]} && git checkout -- ."
@@ -97,7 +107,11 @@ task :update, :roles => :alive_hosts do
     run "cd ~/#{CONFIG["project"]} && git submodule update"
     run "cd ~/#{CONFIG["project"]} && git reset --hard master"
 
+    run_hook :after_update
+
     git_daemon.down
+
+    set_status "up-to-date"
 end
 
 namespace :git_daemon do

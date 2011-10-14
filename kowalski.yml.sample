@@ -9,6 +9,7 @@ runners:
     - runner2
   hooks:
     after_down: "rm -rf ~/kowalski/tmp"
+    after_update: "thor config:kowalski"
 master:
   username: kowalski
   hostname: localhost
