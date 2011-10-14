@@ -2,7 +2,7 @@ require "yaml"
 CONFIG = YAML.load_file("kowalski.yml")
 
 task :push do
-  sh "git push -f kowalski master"
+  sh "git push -f kowalski HEAD"
   sh "ssh #{CONFIG["master"]["username"]}@#{CONFIG["master"]["hostname"]} \"cd #{CONFIG["master"]["sinatra_path"]} && git checkout master -- .\""
   sh "scp kowalski.yml #{CONFIG["master"]["username"]}@#{CONFIG["master"]["hostname"]}:#{CONFIG["master"]["sinatra_path"]}"
 end
