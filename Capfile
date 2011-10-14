@@ -180,7 +180,7 @@ task :run_specs do
             t[:results] += "===============================\n\n"
 
             until (t[:specs] = shifting.synchronize { @all_files.shift(batch_size.call) * ' ' }).empty?
-                putting.synchronize { tablog "sending #{t[:specs].split.size} specs (#{@all_files.size} left)", hostname }
+                putting.synchronize { tablog "sending #{t[:specs].split.size} specs (#{@all_files.size} left)", "#{hostname}.#{core}" }
                 cmd = [
                     "source ~/.bash_profile",
                     "cd ~/#{CONFIG["project"]}",
