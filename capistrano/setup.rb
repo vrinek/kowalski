@@ -21,7 +21,7 @@ namespace :setup do
     task :ruby, :roles => :alive_hosts do
         run "mkdir -p ~/prepare"
         run "rm -f ~/prepare/setup_ruby.sh"
-        upload "script/distributed/setup_ruby.sh", "prepare/setup_ruby.sh", :mode => "+x", :via => :scp
+        upload "script/setup_ruby.sh", "prepare/setup_ruby.sh", :mode => "+x", :via => :scp
         run "~/prepare/setup_ruby.sh", :shell => false
     end
 
@@ -29,7 +29,7 @@ namespace :setup do
     task :tmpfs, :roles => :alive_hosts do
         run "mkdir -p ~/prepare"
         run "rm -f ~/prepare/setup_tmpfs.sh"
-        upload "script/distributed/setup_tmpfs.sh", "prepare/setup_tmpfs.sh", :mode => "+x", :via => :scp
+        upload "script/setup_tmpfs.sh", "prepare/setup_tmpfs.sh", :mode => "+x", :via => :scp
         run "~/prepare/setup_tmpfs.sh", :shell => false
     end
 
