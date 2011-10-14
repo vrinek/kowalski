@@ -49,6 +49,7 @@ def cpu_cores(hostname)
 end
 
 def ssh(hostname, command)
+    puts "[#{hostname}] #{command}"
     `ssh #{CONFIG["runners"]["user"]}@#{hostname} '#{command}'`
 end
 
