@@ -30,7 +30,10 @@ def alive_hosts
 end
 
 def run_hooks(hook)
-    system CONFIG["master"]["hooks"][hook.to_s] if CONFIG["master"]["hooks"] && CONFIG["master"]["hooks"][hook.to_s]
+    if CONFIG["master"]["hooks"] && cmd = CONFIG["master"]["hooks"][hook.to_s]
+        puts "    [local] #{cmd}"
+        system cmd
+    end
     run CONFIG["runners"]["hooks"][hook.to_s] if CONFIG["runners"]["hooks"] && CONFIG["runners"]["hooks"][hook.to_s]
 end
 
