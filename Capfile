@@ -45,7 +45,7 @@ def run_hooks(hook)
 end
 
 def cpu_cores(hostname)
-    ssh hostname, "cat /proc/cpuinfo | grep processor | wc -l".strip.to_i
+    ssh(hostname, "cat /proc/cpuinfo | grep processor | wc -l").strip.to_i
 end
 
 def ssh(hostname, command)
