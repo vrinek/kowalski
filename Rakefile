@@ -1,3 +1,4 @@
+require "yaml"
 CONFIG = YAML.load_file("kowalski.yml")
 
 task :push do
