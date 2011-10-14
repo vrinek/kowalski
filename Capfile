@@ -186,7 +186,7 @@ task :run_specs do
                     "cd ~/#{CONFIG["project"]}",
                     "GEM_HOME=~/.rubygems SUB_ENV=#{CONFIG["code"]} TEST_ENV_NUMBER=#{core} ~/.rubygems/bin/bundle exec rspec --drb --drb-port #{8998 + core.to_i} --format progress #{t[:specs]} 2>/dev/null"
                 ] * ' && '
-                t[:results] += `ssh #{CONFIG["runners"]["user"]}@#{host} '#{cmd}'`
+                t[:results] += `ssh #{CONFIG["runners"]["user"]}@#{hostname} '#{cmd}'`
                 @errors += 1 unless t[:results].split("\n").last =~ /\d+ examples?, \d+ failures?/
                 putting.synchronize { tablog nil, hostname, "#{t[:results].split("\n").last}" }
             end
