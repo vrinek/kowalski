@@ -61,7 +61,7 @@ task :up do
     system CONFIG["hooks"]["before_up"] if CONFIG["hooks"]["before_up"]
 
     update
-    run "cd ~/#{CONFIG["project"]}/config && ls *.#{CONFIG["code"]} | sed 's/\(.*\).#{CONFIG["code"]}/cp & \1/' | sh", :shell => false
+    run "cd ~/#{CONFIG["project"]}/config && ls *.#{CONFIG["code"]} | sed 's/\(.*\).#{CONFIG["code"]}/cp & \\1/' | sh", :shell => false
     run "mkdir -p ~/.redis-temp"
 
     bundler
