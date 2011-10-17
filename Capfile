@@ -156,10 +156,10 @@ task :run_specs do
     hosts = []
     roles[:alive_hosts].map(&:host).map do |hostname|
         load_avg_cores = begin
-            cpu_cores(hostname)/(max_load(hostname).to_i*2)
+            cpu_cores(hostname)/(max_load(hostname)*2)
         rescue ZeroDivisionError
             cpu_cores(hostname)
-        end
+        end.to_i
         cores_to_use = [1, load_avg_cores, cpu_cores(hostname)-2].sort[1]
         cores_to_use.times {|c| hosts << "#{hostname}.#{c}"}
     end.flatten
