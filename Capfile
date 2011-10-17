@@ -194,11 +194,14 @@ task :run_specs do
     end
 
     @threads.each(&:join)
-    all_results = @threads.map{|t| t[:results]}
-    examples = all_results.join.scan(/(\d+) examples?/).flatten.map(&:to_i).reduce(&:+)
-    failures = all_results.join.scan(/(\d+) failures?/).flatten.map(&:to_i).reduce(&:+)
+    all_results = @threads.map{|t| t[:results]}.join
+    examples = all_results.scan(/(\d+) examples?/).flatten.map(&:to_i).reduce(&:+)
+    failures = all_results.scan(/(\d+) failures?/).flatten.map(&:to_i).reduce(&:+)
 
-    puts all_results.join
+    results_filename = File.join CONFIG["main_path"], "logs", "#{Time.now.to_i}-results.log"
+    FileUtils.mkdir_p File.join(CONFIG["main_path"], "logs")
+    File.open(results_filename, 'w') {|f| f.write(all_results) }
+    puts "Failures:\n\n" + all_results.split("\n\n").select{|b| b =~ /^\s*\d+\)/}.join("\n\n")
 
     total = "#{examples} examples, #{failures} failures, #{@errors} errors"
     puts "\n  TOTAL:\n  #{total}"
