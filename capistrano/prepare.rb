@@ -22,11 +22,21 @@ namespace :prepare do
     desc "initializes and fires up sphinx"
     task :sphinx, :roles => :alive_hosts do
         set_status "getting up (sphinx)"
-        (cpu_cores(hostname)-2).times do |core|
-            bundle_exec "rake sphinx:stop RAILS_ENV=test TEST_ENV_NUMBER=#{core}"
-            bundle_exec "rake sphinx:generate_file RAILS_ENV=test TEST_ENV_NUMBER=#{core}"
-            bundle_exec "rake sphinx:index RAILS_ENV=test TEST_ENV_NUMBER=#{core}"
+
+        hosts = roles[:alive_hosts].map(&:host)
+
+        host_threads = []
+        hosts.each do |hostname|
+            host_threads << Thread.new do
+                (cpu_cores(hostname)-2).times do |core|
+                    ssh hostname, bundle_exec("rake sphinx:stop RAILS_ENV=test TEST_ENV_NUMBER=#{core}", false)
+                    ssh hostname, bundle_exec("rake sphinx:generate_file RAILS_ENV=test TEST_ENV_NUMBER=#{core}", false)
+                    ssh hostname, bundle_exec("rake sphinx:index RAILS_ENV=test TEST_ENV_NUMBER=#{core}", false)
+                end
+            end
         end
+
+        host_threads.each(&:join)
     end
 
     desc "initializes and fires up mysql on a tmpfs"
