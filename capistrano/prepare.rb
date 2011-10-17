@@ -35,9 +35,9 @@ namespace :prepare do
                         ssh hostname, bundle_exec("rake sphinx:index RAILS_ENV=test TEST_ENV_NUMBER=#{core}", false)
                     end
                 else
-                    bundle_exec("rake sphinx:stop RAILS_ENV=test")
-                    bundle_exec("rake sphinx:generate_file RAILS_ENV=test")
-                    bundle_exec("rake sphinx:index RAILS_ENV=test")
+                    ssh hostname, bundle_exec("rake sphinx:stop RAILS_ENV=test", false)
+                    ssh hostname, bundle_exec("rake sphinx:generate_file RAILS_ENV=test", false)
+                    ssh hostname, bundle_exec("rake sphinx:index RAILS_ENV=test", false)
                 end
             end
         end
@@ -63,7 +63,7 @@ namespace :prepare do
                         ssh hostname, bundle_exec("rake mysql:prepare TEST_ENV_NUMBER=#{core}", false)
                     end
                 else
-                    bundle_exec "rake mysql:prepare"
+                    ssh hostname, bundle_exec("rake mysql:prepare", false)
                 end
             end
         end
