@@ -48,6 +48,10 @@ def cpu_cores(hostname)
     ssh(hostname, "cat /proc/cpuinfo | grep processor | wc -l").strip.to_i
 end
 
+def max_load(hostname)
+    ssh(hostname, "cat /proc/loadavg").split[0..2].map(&:to_f).max
+end
+
 def ssh(hostname, command)
     return if command.nil? or command == ''
     puts "[#{hostname}] #{command}"
@@ -149,8 +153,10 @@ task :run_specs do
     end
     puts "#{@all_files.size} spec_files found"
 
-    hosts = roles[:alive_hosts].map(&:host).map do |hostname|
-        (0..(cpu_cores(hostname)/2 - 1)).to_a.map {|c| "#{hostname}.#{c}"}
+    hosts = []
+    roles[:alive_hosts].map(&:host).map do |hostname|
+        cores_to_use = [1, cpu_cores(hostname)/max_load(hostname).to_i, cpu_cores(hostname)-1].sort[1]
+        cores_to_use.times {|c| hosts << "#{hostname}.#{c}"}
     end.flatten
 
     @threads = []
