@@ -198,8 +198,8 @@ task :run_specs do
     examples = all_results.scan(/(\d+) examples?/).flatten.map(&:to_i).reduce(&:+)
     failures = all_results.scan(/(\d+) failures?/).flatten.map(&:to_i).reduce(&:+)
 
-    results_filename = File.join CONFIG["main_path"], "logs", "#{Time.now.to_i}-results.log"
-    FileUtils.mkdir_p File.join(CONFIG["main_path"], "logs")
+    results_filename = File.join CONFIG["master"]["main_path"], "logs", "#{Time.now.to_i}-results.log"
+    FileUtils.mkdir_p File.join(CONFIG["master"]["main_path"], "logs")
     File.open(results_filename, 'w') {|f| f.write(all_results) }
 
     # Failures have a number prepended like  "3)"
