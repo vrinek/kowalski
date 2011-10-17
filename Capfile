@@ -176,7 +176,7 @@ task :run_specs do
 
             t[:results] = ""
             t[:results] += "\n===============================\n"
-            t[:results] += "    Results for #{hostname}\n"
+            t[:results] += "    Results for #{hostname} (#{core})\n"
             t[:results] += "===============================\n\n"
 
             until (t[:specs] = shifting.synchronize { @all_files.shift(batch_size.call) * ' ' }).empty?
