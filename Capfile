@@ -165,7 +165,7 @@ task :run_specs do
     end.flatten
 
     @threads = []
-    starting_batch = @all_files.size/(hosts.size).to_i
+    starting_batch = @all_files.size/(hosts.size**1.7).to_i
     batch_size = lambda { [1, @all_files.size/(hosts.size).to_i, starting_batch].sort[1] }
     shifting = Mutex.new
     putting = Mutex.new
