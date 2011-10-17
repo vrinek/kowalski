@@ -22,9 +22,11 @@ namespace :prepare do
     desc "initializes and fires up sphinx"
     task :sphinx, :roles => :alive_hosts do
         set_status "getting up (sphinx)"
-        bundle_exec "rake sphinx:stop RAILS_ENV=test"
-        bundle_exec "rake sphinx:generate_file RAILS_ENV=test TEST_ENV_NUMBER=0"
-        bundle_exec "rake sphinx:index RAILS_ENV=test"
+        (cpu_cores(hostname)-2).times do |core|
+            bundle_exec "rake sphinx:stop RAILS_ENV=test TEST_ENV_NUMBER=#{core}"
+            bundle_exec "rake sphinx:generate_file RAILS_ENV=test TEST_ENV_NUMBER=#{core}"
+            bundle_exec "rake sphinx:index RAILS_ENV=test TEST_ENV_NUMBER=#{core}"
+        end
     end
 
     desc "initializes and fires up mysql on a tmpfs"
@@ -40,7 +42,7 @@ namespace :prepare do
                 ssh hostname, bundle_exec("rake mysql:init_db RAILS_ENV=test", false)
                 ssh hostname, bundle_exec("rake mysql:start RAILS_ENV=test", false)
 
-                (cpu_cores(hostname)-1).times do |core|
+                (cpu_cores(hostname)-2).times do |core|
                     ssh hostname, bundle_exec("rake mysql:prepare TEST_ENV_NUMBER=#{core}", false)
                 end
             end
