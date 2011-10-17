@@ -160,13 +160,17 @@ task :run_specs do
 
     hosts = []
     roles[:alive_hosts].map(&:host).map do |hostname|
-        load_avg_cores = begin
-            cpu_cores(hostname)/(max_load(hostname)*2)
-        rescue ZeroDivisionError
-            cpu_cores(hostname)
-        end.to_i
-        cores_to_use = [1, load_avg_cores, cpu_cores(hostname)-2].sort[1]
-        cores_to_use.times {|c| hosts << "#{hostname}.#{c}"}
+        if CONFIG["parallel"]
+            load_avg_cores = begin
+                cpu_cores(hostname)/(max_load(hostname)*2)
+            rescue ZeroDivisionError
+                cpu_cores(hostname)
+            end.to_i
+            cores_to_use = [1, load_avg_cores, cpu_cores(hostname)-2].sort[1]
+            cores_to_use.times {|c| hosts << "#{hostname}.#{c}"}
+        else
+            hosts << "#{hostname}.0"
+        end
     end.flatten
 
     @threads = []
@@ -182,13 +186,17 @@ task :run_specs do
             t = Thread.current
             hostname, core = host.split(".")
 
+            spork_port = CONFIG["parallel"] ? 8998 + core.to_i : 8998
+            test_env = CONFIG["parallel"] ? "TEST_ENV_NUMBER=#{core} " : ""
+
             Thread.new do
-                system "ssh #{CONFIG["runners"]["user"]}@#{hostname} 'source ~/.bash_profile; cd ~/#{CONFIG["project"]}; TEST_ENV_NUMBER=#{core} GEM_HOME=~/.rubygems ~/.rubygems/bin/bundle exec spork -p #{8998 + core.to_i} 1> /dev/null'"
+                spork_up_cmd = "#{test_env}GEM_HOME=~/.rubygems ~/.rubygems/bin/bundle exec spork -p #{spork_port} 1> /dev/null'"
+                system "ssh #{CONFIG["runners"]["user"]}@#{hostname} 'source ~/.bash_profile; cd ~/#{CONFIG["project"]}; " + spork_up_cmd
             end
 
             until t[:spork_is_up]
                 sleep 0.1
-                t[:spork_is_up] = (`ssh #{CONFIG["runners"]["user"]}@#{hostname} "netstat -nl | grep #{8998 + core.to_i}"`.strip != "")
+                t[:spork_is_up] = (`ssh #{CONFIG["runners"]["user"]}@#{hostname} "netstat -nl | grep #{spork_port}"`.strip != "")
             end
 
             t[:results] = ""
@@ -201,7 +209,7 @@ task :run_specs do
                 cmd = [
                     "source ~/.bash_profile",
                     "cd ~/#{CONFIG["project"]}",
-                    "GEM_HOME=~/.rubygems SUB_ENV=#{CONFIG["code"]} TEST_ENV_NUMBER=#{core} ~/.rubygems/bin/bundle exec rspec --drb --drb-port #{8998 + core.to_i} --format progress #{t[:specs]} 2>/dev/null"
+                    "#{test_env}GEM_HOME=~/.rubygems SUB_ENV=#{CONFIG["code"]} ~/.rubygems/bin/bundle exec rspec --drb --drb-port #{spork_port} --format progress #{t[:specs]} 2>/dev/null"
                 ] * ' && '
                 t[:results] += `ssh #{CONFIG["runners"]["user"]}@#{hostname} '#{cmd}'`
                 @errors += 1 unless t[:results].split("\n").last =~ /\d+ examples?, \d+ failures?/

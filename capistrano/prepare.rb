@@ -28,10 +28,16 @@ namespace :prepare do
         host_threads = []
         hosts.each do |hostname|
             host_threads << Thread.new do
-                (cpu_cores(hostname)-2).times do |core|
-                    ssh hostname, bundle_exec("rake sphinx:stop RAILS_ENV=test TEST_ENV_NUMBER=#{core}", false)
-                    ssh hostname, bundle_exec("rake sphinx:generate_file RAILS_ENV=test TEST_ENV_NUMBER=#{core}", false)
-                    ssh hostname, bundle_exec("rake sphinx:index RAILS_ENV=test TEST_ENV_NUMBER=#{core}", false)
+                if CONFIG["parallel"]
+                    (cpu_cores(hostname)-2).times do |core|
+                        ssh hostname, bundle_exec("rake sphinx:stop RAILS_ENV=test TEST_ENV_NUMBER=#{core}", false)
+                        ssh hostname, bundle_exec("rake sphinx:generate_file RAILS_ENV=test TEST_ENV_NUMBER=#{core}", false)
+                        ssh hostname, bundle_exec("rake sphinx:index RAILS_ENV=test TEST_ENV_NUMBER=#{core}", false)
+                    end
+                else
+                    bundle_exec("rake sphinx:stop RAILS_ENV=test")
+                    bundle_exec("rake sphinx:generate_file RAILS_ENV=test")
+                    bundle_exec("rake sphinx:index RAILS_ENV=test")
                 end
             end
         end
@@ -52,8 +58,12 @@ namespace :prepare do
                 ssh hostname, bundle_exec("rake mysql:init_db RAILS_ENV=test", false)
                 ssh hostname, bundle_exec("rake mysql:start RAILS_ENV=test", false)
 
-                (cpu_cores(hostname)-2).times do |core|
-                    ssh hostname, bundle_exec("rake mysql:prepare TEST_ENV_NUMBER=#{core}", false)
+                if CONFIG["parallel"]
+                    (cpu_cores(hostname)-2).times do |core|
+                        ssh hostname, bundle_exec("rake mysql:prepare TEST_ENV_NUMBER=#{core}", false)
+                    end
+                else
+                    bundle_exec "rake mysql:prepare"
                 end
             end
         end

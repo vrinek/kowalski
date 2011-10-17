@@ -40,3 +40,4 @@ services:
       - "cd redis-sinit"
       - "make"
 load_balance_start: 1.5
+parallel: false
