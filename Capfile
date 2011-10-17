@@ -199,6 +199,7 @@ task :run_specs do
     failures = all_results.scan(/(\d+) failures?/).flatten.map(&:to_i).reduce(&:+)
 
     results_filename = File.join CONFIG["master"]["main_path"], "logs", "#{Time.now.to_i}-results.log"
+    require "fileutils"
     FileUtils.mkdir_p File.join(CONFIG["master"]["main_path"], "logs")
     File.open(results_filename, 'w') {|f| f.write(all_results) }
 
