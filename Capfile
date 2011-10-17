@@ -85,21 +85,26 @@ end
 
 desc "brings up all services on runners"
 task :up do
-    set_status "getting up..."
+    begin
+        set_status "getting up..."
 
-    run_hooks :before_up
+        run_hooks :before_up
 
-    update
-    run "mkdir -p ~/.redis-temp"
+        update
+        run "mkdir -p ~/.redis-temp"
 
-    bundler
-    prepare.sitemaps
-    prepare.mongo
-    prepare.redis
-    prepare.mysql
-    prepare.sphinx
+        bundler
+        prepare.sitemaps
+        prepare.mongo
+        prepare.redis
+        prepare.mysql
+        prepare.sphinx
 
-    run_hooks :after_up
+        run_hooks :after_up
+    rescue => e
+        puts "There was an exception:\n\t#{e.inspect}\nInitiating down task...\n\n"
+        down
+    end
 
     set_status "ready to ROCK"
 end
