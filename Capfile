@@ -201,6 +201,8 @@ task :run_specs do
     results_filename = File.join CONFIG["main_path"], "logs", "#{Time.now.to_i}-results.log"
     FileUtils.mkdir_p File.join(CONFIG["main_path"], "logs")
     File.open(results_filename, 'w') {|f| f.write(all_results) }
+
+    # Failures have a number prepended like  "3)"
     puts "Failures:\n\n" + all_results.split("\n\n").select{|b| b =~ /^\s*\d+\)/}.join("\n\n")
 
     total = "#{examples} examples, #{failures} failures, #{@errors} errors"
