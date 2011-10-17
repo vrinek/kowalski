@@ -49,25 +49,28 @@ namespace :prepare do
     task :mysql, :roles => :alive_hosts do
         set_status "getting up (mysql)"
 
-        hosts = roles[:alive_hosts].map(&:host)
+        if CONFIG["parallel"]
+            hosts = roles[:alive_hosts].map(&:host)
 
-        host_threads = []
-        hosts.each do |hostname|
-            host_threads << Thread.new do
-                ssh hostname, bundle_exec("rake mysql:stop RAILS_ENV=test", false)
-                ssh hostname, bundle_exec("rake mysql:init_db RAILS_ENV=test", false)
-                ssh hostname, bundle_exec("rake mysql:start RAILS_ENV=test", false)
+            host_threads = []
+            hosts.each do |hostname|
+                host_threads << Thread.new do
+                    ssh hostname, bundle_exec("rake mysql:stop RAILS_ENV=test", false)
+                    ssh hostname, bundle_exec("rake mysql:init_db RAILS_ENV=test", false)
+                    ssh hostname, bundle_exec("rake mysql:start RAILS_ENV=test", false)
 
-                if CONFIG["parallel"]
                     (cpu_cores(hostname)-2).times do |core|
                         ssh hostname, bundle_exec("rake mysql:prepare TEST_ENV_NUMBER=#{core}", false)
                     end
-                else
-                    ssh hostname, bundle_exec("rake mysql:prepare", false)
                 end
             end
-        end
 
-        host_threads.each(&:join)
+            host_threads.each(&:join)
+        else
+            bundle_exec "rake mysql:stop RAILS_ENV=test"
+            bundle_exec "rake mysql:init_db RAILS_ENV=test"
+            bundle_exec "rake mysql:start RAILS_ENV=test"
+            bundle_exec "rake mysql:prepare"
+        end
     end
 end
