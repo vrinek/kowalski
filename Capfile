@@ -156,16 +156,17 @@ task :run_specs do
     hosts = []
     roles[:alive_hosts].map(&:host).map do |hostname|
         load_avg_cores = begin
-            cpu_cores(hostname)/max_load(hostname).to_i
+            cpu_cores(hostname)/(max_load(hostname).to_i*2)
         rescue ZeroDivisionError
             cpu_cores(hostname)
         end
-        cores_to_use = [1, load_avg_cores, cpu_cores(hostname)-1].sort[1]
+        cores_to_use = [1, load_avg_cores, cpu_cores(hostname)-2].sort[1]
         cores_to_use.times {|c| hosts << "#{hostname}.#{c}"}
     end.flatten
 
     @threads = []
-    batch_size = lambda { [1, @all_files.size/(hosts.size).to_i, 10].sort[1] }
+    starting_batch = @all_files.size/((hosts.size).to_i**2)
+    batch_size = lambda { [1, @all_files.size/(hosts.size).to_i, starting_batch].sort[1] }
     shifting = Mutex.new
     putting = Mutex.new
     @errors = 0
