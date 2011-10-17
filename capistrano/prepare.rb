@@ -23,26 +23,26 @@ namespace :prepare do
     task :sphinx, :roles => :alive_hosts do
         set_status "getting up (sphinx)"
 
-        hosts = roles[:alive_hosts].map(&:host)
+        if CONFIG["parallel"]
+            hosts = roles[:alive_hosts].map(&:host)
 
-        host_threads = []
-        hosts.each do |hostname|
-            host_threads << Thread.new do
-                if CONFIG["parallel"]
+            host_threads = []
+            hosts.each do |hostname|
+                host_threads << Thread.new do
                     (cpu_cores(hostname)-2).times do |core|
                         ssh hostname, bundle_exec("rake sphinx:stop RAILS_ENV=test TEST_ENV_NUMBER=#{core}", false)
                         ssh hostname, bundle_exec("rake sphinx:generate_file RAILS_ENV=test TEST_ENV_NUMBER=#{core}", false)
                         ssh hostname, bundle_exec("rake sphinx:index RAILS_ENV=test TEST_ENV_NUMBER=#{core}", false)
                     end
-                else
-                    ssh hostname, bundle_exec("rake sphinx:stop RAILS_ENV=test", false)
-                    ssh hostname, bundle_exec("rake sphinx:generate_file RAILS_ENV=test", false)
-                    ssh hostname, bundle_exec("rake sphinx:index RAILS_ENV=test", false)
                 end
             end
-        end
 
-        host_threads.each(&:join)
+            host_threads.each(&:join)
+        else
+            bundle_exec "rake sphinx:stop RAILS_ENV=test"
+            bundle_exec "rake sphinx:generate_file RAILS_ENV=test"
+            bundle_exec "rake sphinx:index RAILS_ENV=test"
+        end
     end
 
     desc "initializes and fires up mysql on a tmpfs"
