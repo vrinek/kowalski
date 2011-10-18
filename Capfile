@@ -197,6 +197,7 @@ task :run_specs do
             until t[:spork_is_up]
                 sleep 0.1
                 t[:spork_is_up] = (`ssh #{CONFIG["runners"]["user"]}@#{hostname} "netstat -nl | grep #{spork_port}"`.strip != "")
+                raise "Spork has disappeared" unless system("ssh #{CONFIG["runners"]["user"]}@#{hostname} \"pgrep -f spork -u #{CONFIG["runners"]["user"]}\"")
             end
 
             t[:results] = ""
