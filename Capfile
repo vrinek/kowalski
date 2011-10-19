@@ -204,10 +204,9 @@ task :run_specs do
                 system "ssh #{CONFIG["runners"]["user"]}@#{hostname} 'source ~/.bash_profile; cd ~/#{CONFIG["project"]}; " + spork_up_cmd
             end
 
-            until t[:spork_is_up]
+            until (`ssh #{CONFIG["runners"]["user"]}@#{hostname} "netstat -nl | grep #{spork_port}"`.strip != "")
                 sleep 0.1
-                t[:spork_is_up] = (`ssh #{CONFIG["runners"]["user"]}@#{hostname} "netstat -nl | grep #{spork_port}"`.strip != "")
-                raise "Spork has disappeared" unless system("ssh #{CONFIG["runners"]["user"]}@#{hostname} \"pgrep -f spork -u #{CONFIG["runners"]["user"]}\"")
+                raise "Spork has disappeared" unless system("ssh #{CONFIG["runners"]["user"]}@#{hostname} \"pgrep -f spork -u #{CONFIG["runners"]["user"]} 1>/dev/null\"")
             end
 
             t[:results] = ""
