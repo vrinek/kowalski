@@ -76,7 +76,7 @@ task :down do
     bundle_exec "rake sphinx:stop RAILS_ENV=test"
     bundle_exec "rake mysql:stop"
     bundle_exec "rake mongo:stop RAILS_ENV=test"
-    bundle_exec "rake redis:stop RAILS_ENV=test"
+    bundle_exec "rake redis:stop RAILS_ENV=test; true" # usually fails
 
     run_hooks :after_down
 
