@@ -29,7 +29,7 @@ def alive_hosts
 end
 
 def up_hosts
-    hosts = alive_runners.select do |host|
+    hosts = alive_hosts.select do |host|
         %w[mysqld searchd mongod redis-server].all? do |service|
             system "ssh #{CONFIG["runners"]["user"]}@#{host} 'netstat -nltp 2>/dev/null | grep #{service}'"
         end
