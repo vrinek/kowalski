@@ -22,10 +22,20 @@ end
 
 def alive_hosts
     hosts = CONFIG["runners"]["hostnames"].select do |host|
-        system "ping -c 1 #{host} > /dev/null"
-    end
+        system "ping -c 1 #{host} > /dev/null"    end
 
     puts "\nAlive runners: #{hosts * ', '}\n\n"
+    return hosts
+end
+
+def up_hosts
+    hosts = alive_runners.select do |host|
+        %w[mysqld searchd mongod redis-server].all? do |service|
+            system "ssh #{CONFIG["runners"]["user"]}@#{host} 'netstat -nltp 2>/dev/null | grep #{service}'"
+        end
+    end
+
+    puts "\nUp runners: #{hosts * ', '}\n\n"
     return hosts
 end
 
@@ -59,6 +69,7 @@ def ssh(hostname, command)
 end
 
 role :alive_hosts, *alive_hosts
+role :up_hosts, *up_hosts
 set :user, CONFIG["code"]
 
 load 'capistrano/setup'
@@ -159,7 +170,7 @@ task :run_specs do
     puts "#{@all_files.size} spec_files found"
 
     hosts = []
-    roles[:alive_hosts].map(&:host).map do |hostname|
+    roles[:up_hosts].map(&:host).map do |hostname|
         if CONFIG["parallel"]
             load_avg_cores = begin
                 cpu_cores(hostname)/(max_load(hostname)*2)
