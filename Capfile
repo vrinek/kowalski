@@ -24,7 +24,7 @@ def alive_hosts
     hosts = CONFIG["runners"]["hostnames"].select do |host|
         system "ping -c 1 #{host} > /dev/null"    end
 
-    puts "\nAlive runners: #{hosts * ', '}\n\n"
+    puts "Alive runners: #{hosts * ', '}"
     return hosts
 end
 
@@ -35,7 +35,7 @@ def up_hosts
         end
     end
 
-    puts "\nUp runners: #{hosts * ', '}\n\n"
+    puts "Up runners: #{hosts * ', '}"
     return hosts
 end
 
