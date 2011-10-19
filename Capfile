@@ -30,9 +30,8 @@ end
 
 def up_hosts
     hosts = alive_hosts.select do |host|
-        %w[mysqld searchd mongod redis-server].all? do |service|
-            system "ssh #{CONFIG["runners"]["user"]}@#{host} 'netstat -nltp 2>/dev/null | grep #{service}' 1>/dev/null"
-        end
+        netstat = `ssh #{CONFIG["runners"]["user"]}@#{host} 'netstat -nltp 2>/dev/null'`
+        (%w[mysqld searchd mongod redis-server] - netstat.scan(/\d+\/([^\s]+)/).flatten).empty?
     end
 
     puts "Up runners: #{hosts * ', '}"
