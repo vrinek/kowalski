@@ -169,6 +169,8 @@ task :run_specs do
     @all_files.map! do |file|
         file.sub(%r[#{CONFIG["master"]["main_path"]}/#{CONFIG["project"]}], "/home/#{CONFIG["runners"]["user"]}/#{CONFIG["project"]}")
     end
+    @sent_files = []
+    @received_files = []
     puts "#{@all_files.size} spec_files found"
 
     hosts = []
@@ -192,6 +194,14 @@ task :run_specs do
     shifting = Mutex.new
     putting = Mutex.new
     @errors = 0
+
+    @progress = Thread.new do
+        loop do
+            putting.synchronize { tablog "#{@sent_files} sent", "MASTER", "#{@received_files} received" }
+            sleep 5
+            break if @all_files.empty?
+        end
+    end
 
     hosts.each do |host|
         p host
@@ -221,13 +231,14 @@ task :run_specs do
             t[:results] += "    Results for #{hostname} (#{core})\n"
             t[:results] += "===============================\n\n"
 
-            until (t[:specs] = shifting.synchronize { @all_files.shift(batch_size.call) * ' ' }).empty?
+            until (t[:specs] = shifting.synchronize { (@sent_files += @all_files.shift(batch_size.call)) * ' ' }).empty?
                 putting.synchronize { tablog "sending #{t[:specs].split.size} specs (#{@all_files.size} left)", "#{hostname}.#{core}" }
                 cmd = [
                     "source ~/.bash_profile",
                     "cd ~/#{CONFIG["project"]}",
                     "#{test_env}GEM_HOME=~/.rubygems SUB_ENV=#{CONFIG["code"]} ~/.rubygems/bin/bundle exec rspec --drb --drb-port #{spork_port} --format progress #{t[:specs]} 2>/dev/null"
                 ] * ' && '
+                @received_files += t[:specs].split
                 t[:results] += `ssh #{CONFIG["runners"]["user"]}@#{hostname} '#{cmd}'`
                 @errors += 1 unless t[:results].split("\n").last =~ /\d+ examples?, \d+ failures?/
                 putting.synchronize { tablog nil, "#{hostname}.#{core}", "#{t[:results].split("\n").last}" }
