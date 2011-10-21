@@ -25,6 +25,14 @@ namespace :setup do
         run "~/prepare/setup_ruby.sh", :shell => false
     end
 
+    task :gems, :roles => :alive_hosts do
+        {
+            :bundler => '1.0.15'
+        }.each do |gem_name, gem_version|
+            run "source ~/.bash_profile && GEM_HOME=~/.rubygems gem list | grep #{gem_name} | grep #{gem_version} || GEM_HOME=~/.rubygems gem install #{gem_name} -v=#{gem_version} --no-ri --no-rdoc", :shell => false
+        end
+    end
+
     desc "sets up tmpfs for mysql"
     task :tmpfs, :roles => :alive_hosts do
         run "mkdir -p ~/prepare"
@@ -90,6 +98,7 @@ namespace :setup do
     task :all do
         ssh
         ruby
+        gems
         redis
         mongo
         project
