@@ -160,6 +160,8 @@ end
 
 desc "runs the specs on the runners"
 task :run_specs do
+    raise "Could not find ready hosts to run the specs on" if roles[:up_hosts].empty?
+
     spork.down
 
     @all_files = CONFIG["spec_folders"].map{|f| `find #{CONFIG["master"]["main_path"]}/#{CONFIG["project"]}/spec/#{f}/ -iname "*.rb"`.split("\n")}.flatten
