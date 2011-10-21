@@ -231,17 +231,21 @@ task :run_specs do
             t[:results] += "    Results for #{hostname} (#{core})\n"
             t[:results] += "===============================\n\n"
 
-            until (t[:specs] = shifting.synchronize { (@sent_files += @all_files.shift(batch_size.call)) * ' ' }).empty?
-                putting.synchronize { tablog "sending #{t[:specs].split.size} specs (#{@all_files.size} left)", "#{hostname}.#{core}" }
+            loop do
+                t[:specs] = shifting.synchronize { @all_files.shift(batch_size.call) }
+                break if t[:specs].empty?
+
+                putting.synchronize { tablog "sending #{t[:specs].size} specs (#{@all_files.size} left)", "#{hostname}.#{core}" }
+                @sent_files += t[:specs]
                 cmd = [
                     "source ~/.bash_profile",
                     "cd ~/#{CONFIG["project"]}",
-                    "#{test_env}GEM_HOME=~/.rubygems SUB_ENV=#{CONFIG["code"]} ~/.rubygems/bin/bundle exec rspec --drb --drb-port #{spork_port} --format progress #{t[:specs]} 2>/dev/null"
+                    "#{test_env}GEM_HOME=~/.rubygems SUB_ENV=#{CONFIG["code"]} ~/.rubygems/bin/bundle exec rspec --drb --drb-port #{spork_port} --format progress #{t[:specs]*' '} 2>/dev/null"
                 ] * ' && '
-                @received_files += t[:specs].split
                 t[:results] += `ssh #{CONFIG["runners"]["user"]}@#{hostname} '#{cmd}'`
                 @errors += 1 unless t[:results].split("\n").last =~ /\d+ examples?, \d+ failures?/
                 putting.synchronize { tablog nil, "#{hostname}.#{core}", "#{t[:results].split("\n").last}" }
+                @received_files += t[:specs]
             end
         end
     end
