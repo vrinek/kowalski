@@ -103,7 +103,6 @@ task :up do
         update
         run "mkdir -p ~/.redis-temp"
 
-        bundler
         prepare.sitemaps
         prepare.mongo
         prepare.redis
@@ -135,6 +134,8 @@ task :update, :roles => :alive_hosts do
     run "cd ~/#{CONFIG["project"]} && git pull --rebase"
     run "cd ~/#{CONFIG["project"]} && git submodule update"
     run "cd ~/#{CONFIG["project"]} && git reset --hard master"
+
+    bundler
 
     run_hooks :after_update
 
