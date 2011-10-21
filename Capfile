@@ -132,6 +132,7 @@ task :update, :roles => :alive_hosts do
     run "cd ~/#{CONFIG["project"]} && git reset --hard HEAD"
     run "cd ~/#{CONFIG["project"]} && git checkout master"
     run "cd ~/#{CONFIG["project"]} && git pull --rebase"
+    run "cd ~/#{CONFIG["project"]} && git submodule init"
     run "cd ~/#{CONFIG["project"]} && git submodule update"
     run "cd ~/#{CONFIG["project"]} && git reset --hard master"
 
