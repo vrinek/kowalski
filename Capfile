@@ -211,6 +211,10 @@ task :run_specs do
                 raise "Spork has disappeared" unless system("ssh #{CONFIG["runners"]["user"]}@#{hostname} \"pgrep -f spork -u #{CONFIG["runners"]["user"]} 1>/dev/null\"")
             end
 
+            if CONFIG["runners"]["renice"]
+               ssh hostname, "renice #{CONFIG["runners"]["renice"]} -u #{CONFIG["runners"]["user"]}"
+            end
+
             t[:results] = ""
             t[:results] += "\n===============================\n"
             t[:results] += "    Results for #{hostname} (#{core})\n"
