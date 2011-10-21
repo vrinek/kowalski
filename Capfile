@@ -197,7 +197,7 @@ task :run_specs do
 
     @progress = Thread.new do
         loop do
-            putting.synchronize { tablog "#{@sent_files} sent", "MASTER", "#{@received_files} received" }
+            putting.synchronize { tablog "#{@sent_files.size} sent", "MASTER", "#{@received_files.size} received" }
             sleep 5
             break if @all_files.empty?
         end
