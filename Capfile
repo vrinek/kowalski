@@ -195,6 +195,7 @@ task :run_specs do
     shifting = Mutex.new
     putting = Mutex.new
     @errors = 0
+    @errors_log = ""
 
     @progress = Thread.new do
         loop do
@@ -244,7 +245,10 @@ task :run_specs do
                     "#{test_env}GEM_HOME=~/.rubygems SUB_ENV=#{CONFIG["code"]} ~/.rubygems/bin/bundle exec rspec --drb --drb-port #{spork_port} --format progress #{t[:specs]*' '} 2>/dev/null"
                 ] * ' && '
                 t[:results] += `ssh #{CONFIG["runners"]["user"]}@#{hostname} '#{cmd}'`
-                @errors += 1 unless t[:results].split("\n").last =~ /\d+ examples?, \d+ failures?/
+                unless t[:results].split("\n").last =~ /\d+ examples?, \d+ failures?/
+                    @errors += 1
+                    @errors_log << t[:results]
+                end
                 putting.synchronize { tablog nil, "#{hostname}.#{core}", "#{t[:results].split("\n").last}" }
                 @received_files += t[:specs]
             end
@@ -263,6 +267,8 @@ task :run_specs do
 
     # Failures have a number prepended like  "3)"
     puts "Failures:\n\n" + all_results.split("\n\n").select{|b| b =~ /^\s*\d+\)/}.join("\n\n")
+
+    puts "Errors:\n\n" + @errors_log + "\n\n"
 
     total = "#{examples} examples, #{failures} failures, #{@errors} errors"
     puts "\n  TOTAL:\n  #{total}"
