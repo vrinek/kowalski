@@ -166,6 +166,7 @@ task :run_specs do
     raise "Could not find ready hosts to run the specs on" if roles[:up_hosts].empty?
 
     spork.down
+    run "rm ~/#{CONFIG["project"]}/log/test.log"
 
     @all_files = CONFIG["spec_folders"].map{|f| `find #{CONFIG["master"]["main_path"]}/#{CONFIG["project"]}/spec/#{f}/ -iname "*.rb"`.split("\n")}.flatten
     @all_files.map! do |file|
