@@ -16,8 +16,9 @@ def tablog(a, b, c = nil)
     puts "#{a.to_s.rjust(40)} : #{b.to_s.center(12)} : #{c}"
 end
 
-def set_status(status)
-    run "echo '#{status}' > ~/.#{CONFIG["project"]}_status"
+def set_status(status, runit = true)
+    cmd = "echo \"#{status}\" > ~/.#{CONFIG["project"]}_status"
+    run cmd if runit
 end
 
 def alive_hosts
@@ -210,9 +211,10 @@ task :run_specs do
         @threads << Thread.new do
             t = Thread.current
             hostname, core = host.split(".")
-
-            spork_port = CONFIG["parallel"] ? 8998 + core.to_i : 8998
             test_env = CONFIG["parallel"] ? "TEST_ENV_NUMBER=#{core} " : ""
+
+            # prepping spork
+            spork_port = CONFIG["parallel"] ? 8998 + core.to_i : 8998
 
             Thread.new do
                 spork_up_cmd = "#{test_env}GEM_HOME=~/.rubygems ~/.rubygems/bin/bundle exec spork -p #{spork_port} 1> /dev/null'"
@@ -223,7 +225,9 @@ task :run_specs do
                 sleep 0.1
                 raise "Spork has disappeared" unless system("ssh #{CONFIG["runners"]["user"]}@#{hostname} \"pgrep -f spork -u #{CONFIG["runners"]["user"]} 1>/dev/null\"")
             end
+            # spork is up
 
+            # renicing the processes
             if CONFIG["runners"]["renice"]
                ssh hostname, "renice #{CONFIG["runners"]["renice"]} -u #{CONFIG["runners"]["user"]}"
             end
@@ -238,10 +242,12 @@ task :run_specs do
                 break if t[:specs].empty?
 
                 putting.synchronize { tablog "sending #{t[:specs].size} specs (#{@all_files.size} left)", "#{hostname}.#{core}" }
+
                 @sent_files += t[:specs]
                 cmd = [
                     "source ~/.bash_profile",
                     "cd ~/#{CONFIG["project"]}",
+                    set_status("running specs", false),
                     "#{test_env}GEM_HOME=~/.rubygems SUB_ENV=#{CONFIG["code"]} ~/.rubygems/bin/bundle exec rspec --drb --drb-port #{spork_port} --format progress #{t[:specs]*' '} 2>/dev/null"
                 ] * ' && '
                 t[:results] += `ssh #{CONFIG["runners"]["user"]}@#{hostname} '#{cmd}'`
@@ -252,6 +258,8 @@ task :run_specs do
                 putting.synchronize { tablog nil, "#{hostname}.#{core}", "#{t[:results].split("\n").last}" }
                 @received_files += t[:specs]
             end
+
+            system "ssh #{CONFIG["runners"]["user"]}@#{hostname} '#{set_status "done running specs"}'"
         end
     end
 
