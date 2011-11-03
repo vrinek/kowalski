@@ -99,7 +99,7 @@ namespace :setup do
 
         cmd = ''
         cmd << "source /home/#{CONFIG["runners"]["user"]}/.bash_profile && "
-        cmd << 'if [ "$( searchd --h | head -1 | grep \''+CONFIG["services"]["sphinx"]["version"].gsub(/\./, "\\.")+'\' )" ]; '
+        cmd << 'if [ "$( searchd -h | head -1 | grep \''+CONFIG["services"]["sphinx"]["version"].gsub(/\./, "\\.")+'\' )" ]; '
         cmd <<     'then echo "sphinx is OK"; '
         cmd <<     "else #{install_sphinx}; "
         cmd << 'fi'
