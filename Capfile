@@ -18,7 +18,7 @@ end
 
 def set_status(status, runit = true)
     cmd = "echo \"#{status}\" > ~/.#{CONFIG["project"]}_status"
-    run cmd if runit
+    runit ? run cmd : cmd
 end
 
 def alive_hosts
