@@ -94,7 +94,7 @@ namespace :setup do
             "rm -rf /home/#{CONFIG["runners"]["user"]}/src/sphinx",
             "cd /home/#{CONFIG["runners"]["user"]}/src"
         ] + CONFIG["services"]["sphinx"]["install"] + [
-            "echo 'export PATH=\"/home/#{CONFIG["runners"]["user"]}/src/sphinx-bin/:$PATH\"' >> ~/.bash_profile"
+            "echo 'export PATH=\"/home/#{CONFIG["runners"]["user"]}/src/sphinx/bin/:$PATH\"' >> ~/.bash_profile"
         ]) * " && "
 
         cmd = ''
@@ -125,5 +125,9 @@ namespace :setup do
         mongo
         project
         tmpfs
+    end
+
+    task :nuke do
+        run "rm -rf ~/*"
     end
 end
