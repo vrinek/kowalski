@@ -33,7 +33,7 @@ def alive_hosts
             end
         end
     end
-    threads.eahc(&:join)
+    threads.each(&:join)
 
     puts "Alive runners: #{@alive_hosts * ', '}"
     return @alive_hosts
