@@ -22,11 +22,21 @@ def set_status(status, runit = true)
 end
 
 def alive_hosts
-    hosts = CONFIG["runners"]["hostnames"].select do |host|
-        system "ping -c 1 #{host} > /dev/null"    end
+    return @alive_hosts if @alive_hosts
 
-    puts "Alive runners: #{hosts * ', '}"
-    return hosts
+    @alive_hosts = []
+    threads = []
+    CONFIG["runners"]["hostnames"].each do |host|
+        threads << Thread.new do
+            if system "ping -c 1 #{host} > /dev/null"
+                @alive_hosts << host
+            end
+        end
+    end
+    threads.eahc(&:join)
+
+    puts "Alive runners: #{@alive_hosts * ', '}"
+    return @alive_hosts
 end
 
 def up_hosts
