@@ -123,6 +123,7 @@ namespace :setup do
         gems
         redis
         mongo
+        sphinx
         project
         tmpfs
     end
