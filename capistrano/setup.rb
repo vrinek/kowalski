@@ -85,6 +85,28 @@ namespace :setup do
         run cmd, :shell => false
     end
 
+    desc "sets up sphinx-0.9.9"
+    task :sphinx, :roles => :alive_hosts do
+        raise "There are no instructions for sphinx install in kowalski.yml" if CONFIG["services"]["sphinx"].nil? or CONFIG["services"]["sphinx"]["install"].empty?
+
+        install_sphinx = ([
+            "mkdir -p /home/#{CONFIG["runners"]["user"]}/src",
+            "rm -rf /home/#{CONFIG["runners"]["user"]}/src/sphinx",
+            "cd /home/#{CONFIG["runners"]["user"]}/src"
+        ] + CONFIG["services"]["sphinx"]["install"] + [
+            "echo 'export PATH=\"/home/#{CONFIG["runners"]["user"]}/src/sphinx-bin/:$PATH\"' >> ~/.bash_profile"
+        ]) * " && "
+
+        cmd = ''
+        cmd << "source /home/#{CONFIG["runners"]["user"]}/.bash_profile && "
+        cmd << 'if [ "$( searchd --h | head -1 | grep \''+CONFIG["services"]["sphinx"]["version"].gsub(/\./, "\\.")+'\' )" ]; '
+        cmd <<     'then echo "sphinx is OK"; '
+        cmd <<     "else #{install_sphinx}; "
+        cmd << 'fi'
+
+        run cmd, :shell => false
+    end
+
     desc "clone #{CONFIG["project"]} from #{CONFIG["git_clone"]}"
     task :project, :roles => :alive_hosts do
         git_daemon.up
