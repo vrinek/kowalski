@@ -40,13 +40,22 @@ def alive_hosts
 end
 
 def up_hosts
-    hosts = alive_hosts.select do |host|
-        netstat = `ssh #{CONFIG["runners"]["user"]}@#{host} 'netstat -nltp 2>/dev/null'`
-        (%w[mysqld searchd mongod redis-server] - netstat.scan(/\d+\/([^\s]+)/).flatten).empty?
-    end
+    return @up_hosts if @up_hosts
 
-    puts "Up runners: #{hosts * ', '}"
-    return hosts
+    @up_hosts = []
+    threads = []
+    alive_hosts.each do |host|
+        threads << Thread.new do
+            netstat = `ssh #{CONFIG["runners"]["user"]}@#{host} 'netstat -nltp 2>/dev/null'`
+            if (%w[mysqld searchd mongod redis-server] - netstat.scan(/\d+\/([^\s]+)/).flatten).empty?
+                @up_hosts << host
+            end
+        end
+    end
+    threads.each(&:join)
+
+    puts "Up runners: #{@up_hosts * ', '}"
+    return @up_hosts
 end
 
 def run_hooks(hook)
