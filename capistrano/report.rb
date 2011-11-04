@@ -17,7 +17,7 @@ task :report, :roles => :alive_hosts do
         "redis-server --version" => ["2.1.5.sinit"]
     }.each do |command, version|
         cmd = " if [ \"$( #{command} | grep '#{version.map{|p| p.gsub(/\./, "\\.")} * '.*'}' )\" ]; "
-        cmd += "then echo \"#{command.split.first} is OK\" ; else echo \"WARNING: should have version #{version * ' '} ($(#{command}))\"; fi "
+        cmd += "then echo -e \"\\e[32m#{command.split.first} is OK\\e[0m\" ; else echo -e \"\\e[31mWARNING: should have version #{version * ' '} ($(#{command}))\\e[0m\"; fi "
         run "source ~/.bash_profile && #{cmd} ; true", :shell => false
     end
 
