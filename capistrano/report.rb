@@ -3,7 +3,7 @@ task :status do
     run "cat ~/.#{CONFIG["project"]}_status"
 
     %w[mysqld searchd mongod redis-server].each do |service|
-        run "if [ \"$( netstat -nltp 2>/dev/null | grep #{service} )\" ]; then echo -e \"\\e[32m#{service} is up\\e[0m\"; else echo -e \"\\e[31m#{service} is down\\e[0m\"; fi"
+        run "if [ \"$( netstat -nltp 2>/dev/null | grep #{service} )\" ]; then echo -e \"\\e[32m#{service} is up\\e[0m\"; else echo -e \"\\e[31m#{service} is down\\e[0m\"; fi", :shell => false
     end
 end
 
