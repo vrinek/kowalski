@@ -38,3 +38,7 @@ task :disk_space do
     run "du -sh ~/#{CONFIG["project"]}/*"
     run "du -sh ~/#{CONFIG["project"]}/tmp/*"
 end
+
+task :cpuload do
+    run "ps -U #{CONFIG["runners"]["user"]} -o pcpu --no-headers | awk '{sum+=$1} END{print sum}'"
+end
