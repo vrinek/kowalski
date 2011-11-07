@@ -15,6 +15,9 @@ namespace :setup do
                 puts "    Ping to \"#{host}\" failed"
             end
         end
+
+        # silences MOTD message
+        run "touch ~/.hushlogin"
     end
 
     desc "sets up ruby using rbenv and ruby-build"
