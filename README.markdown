@@ -59,7 +59,7 @@ Start hacking the capistrano tasks
 
 Set up SSH access, ruby and everything else in capistrano/setup.rb
 
-    cap setup
+    cap setup:all
 
 Prepare needed services (found in Capfile and capistrano/prepare.rb)
 
