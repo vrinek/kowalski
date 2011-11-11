@@ -16,9 +16,9 @@ desc "reports versions and last commit"
 task :report, :roles => :alive_hosts do
     {
         "ruby --version" => ["1.8.7", "patchlevel 352"],
-        "searchd --help | head -1" => ["0.9.9"],
-        "mongod --version | head -1" => ["1.6.5"],
-        "redis-server --version" => ["2.1.5.sinit"]
+        "searchd --help | head -1" => [CONFIG["services"]["sphinx"]["version"]],
+        "mongod --version | head -1" => [CONFIG["services"]["mongo"]["version"]],
+        "redis-server --version" => [CONFIG["services"]["redis"]["version"]]
     }.each do |command, version|
         cmd = " if [ \"$( #{command} | grep '#{version.map{|p| p.gsub(/\./, "\\.")} * '.*'}' )\" ]; "
         cmd += "then echo -e \"\\e[32m#{command.split.first} is OK\\e[0m\" ; else echo -e \"\\e[31mWARNING: should have version #{version * ' '} ($(#{command}))\\e[0m\"; fi "
