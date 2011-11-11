@@ -2,11 +2,13 @@ desc "reports the status of the services"
 task :status do
     run "cat ~/.#{CONFIG["project"]}_status"
 
-    %w[mysqld searchd mongod redis-server].each do |service|
-        run "if [ \"$( netstat -nltp 2>/dev/null | grep #{service} )\" ]; then echo -e \"\\e[32m#{service} is up\\e[0m\"; else echo -e \"\\e[31m#{service} is down\\e[0m\"; fi", :shell => false
-    end
+    cmd = %w[mysqld searchd mongod redis-server].map do |service|
+        "if [ \"$( netstat -nltp 2>/dev/null | grep #{service} )\" ]; then echo -e \"\\e[32m#{service} is up\\e[0m\"; else echo -e \"\\e[31m#{service} is down\\e[0m\"; fi"
+    end.join('; ')
 
-    run "if [ \"$( netstat -nltp 2>/dev/null | grep \" $( pgrep -f spork -u #{CONFIG["runners"]["user"]} )/ruby\" )\" ]; then echo -e \"\\e[32mspork is up\\e[0m\"; else echo -e \"\\e[31mspork is down\\e[0m\"; fi", :shell => false
+    cmd << "; if [ \"$( netstat -nltp 2>/dev/null | grep \" $( pgrep -f spork -u #{CONFIG["runners"]["user"]} )/ruby\" )\" ]; then echo -e \"\\e[32mspork is up\\e[0m\"; else echo -e \"\\e[31mspork is down\\e[0m\"; fi"
+
+    run cmd, :shell => false
 end
 
 
