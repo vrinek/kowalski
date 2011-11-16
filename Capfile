@@ -147,14 +147,11 @@ task :update, :roles => :alive_hosts do
 
     run_hooks :before_update
 
-    run "cd ~/#{CONFIG["project"]} && git clean -f"
+    run "cd ~/#{CONFIG["project"]} && git clean -fd"
     run "cd ~/#{CONFIG["project"]} && git checkout -- ."
-    run "cd ~/#{CONFIG["project"]} && git reset --hard HEAD"
-    run "cd ~/#{CONFIG["project"]} && git checkout master"
-    run "cd ~/#{CONFIG["project"]} && git pull --rebase"
+    run "cd ~/#{CONFIG["project"]} && git reset --hard origin/master"
     run "cd ~/#{CONFIG["project"]} && git submodule init"
     run "cd ~/#{CONFIG["project"]} && git submodule update"
-    run "cd ~/#{CONFIG["project"]} && git reset --hard master"
 
     bundler
 
