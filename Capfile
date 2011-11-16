@@ -149,6 +149,7 @@ task :update, :roles => :alive_hosts do
 
     run "cd ~/#{CONFIG["project"]} && git clean -fd"
     run "cd ~/#{CONFIG["project"]} && git checkout -- ."
+    run "cd ~/#{CONFIG["project"]} && git fetch origin"
     run "cd ~/#{CONFIG["project"]} && git reset --hard origin/master"
     run "cd ~/#{CONFIG["project"]} && git submodule init"
     run "cd ~/#{CONFIG["project"]} && git submodule update"
