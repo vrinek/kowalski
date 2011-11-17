@@ -125,10 +125,12 @@ task :up do
         update
         run "mkdir -p ~/.redis-temp"
 
-        prepare.sitemaps
-        prepare.mongo
-        prepare.redis
-        prepare.mysql
+        threads = []
+        threads << Thread.new { prepare.sitemaps }
+        threads << Thread.new { prepare.mongo }
+        threads << Thread.new { prepare.redis }
+        threads << Thread.new { prepare.mysql }
+        threads.map(&:join)
         prepare.sphinx
 
         run_hooks :after_up
