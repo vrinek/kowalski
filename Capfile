@@ -26,7 +26,9 @@ def alive_hosts
 
     @alive_hosts = []
     threads = []
-    CONFIG["runners"]["hostnames"].each do |host|
+    hosts = CONFIG["runners"]["hostnames"]
+    hosts = ENV['HOSTS'].split(",") if ENV['HOSTS']
+    hosts.each do |host|
         threads << Thread.new do
             if system "ping -c 1 #{host} > /dev/null"
                 @alive_hosts << host
