@@ -44,16 +44,16 @@ namespace :setup do
         run "~/prepare/setup_tmpfs.sh", :shell => false
     end
 
-    desc "sets up redis 2.1.5.sinit"
+    desc "sets up redis 2.4.2"
     task :redis, :roles => :alive_hosts do
         raise "There are no instructions for redis install in kowalski.yml" if CONFIG["services"]["redis"].nil? or CONFIG["services"]["redis"]["install"].empty?
 
         install_redis = ([
             "mkdir -p /home/#{CONFIG["runners"]["user"]}/src",
-            "rm -rf /home/#{CONFIG["runners"]["user"]}/src/redis-sinit",
+            "rm -rf /home/#{CONFIG["runners"]["user"]}/src/redis-*",
             "cd /home/#{CONFIG["runners"]["user"]}/src"
         ] + CONFIG["services"]["redis"]["install"] + [
-            "echo 'export PATH=\"/home/#{CONFIG["runners"]["user"]}/src/redis-sinit/src/:$PATH\"' >> ~/.bash_profile"
+            "echo 'export PATH=\"/home/#{CONFIG["runners"]["user"]}/bin/:$PATH\"' >> ~/.bash_profile"
         ]) * " && "
 
         cmd = ''
