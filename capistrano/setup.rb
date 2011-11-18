@@ -50,6 +50,7 @@ namespace :setup do
 
         install_redis = ([
             "mkdir -p /home/#{CONFIG["runners"]["user"]}/src",
+            "mkdir -p /home/#{CONFIG["runners"]["user"]}/bin",
             "rm -rf /home/#{CONFIG["runners"]["user"]}/src/redis-*",
             "cd /home/#{CONFIG["runners"]["user"]}/src"
         ] + CONFIG["services"]["redis"]["install"] + [
