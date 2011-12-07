@@ -54,7 +54,7 @@ namespace :setup do
             "rm -rf /home/#{CONFIG["runners"]["user"]}/src/redis-*",
             "cd /home/#{CONFIG["runners"]["user"]}/src"
         ] + CONFIG["services"]["redis"]["install"] + [
-            "echo 'export PATH=\"/home/#{CONFIG["runners"]["user"]}/bin/:$PATH\"' >> ~/.bash_profile"
+            "echo 'export PATH=\"/home/#{CONFIG["runners"]["user"]}/bin:$PATH\"' >> ~/.bash_profile"
         ]) * " && "
 
         cmd = ''
