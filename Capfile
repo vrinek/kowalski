@@ -134,12 +134,15 @@ task :up do
         prepare.sphinx
 
         run_hooks :after_up
+
+        set_status "ready to ROCK"
     rescue => e
+        puts "#" * 50
         puts "There was an exception:\n\t#{e.inspect}\nInitiating down task...\n\n"
+        puts "#" * 50
+
         down
     end
-
-    set_status "ready to ROCK"
 end
 
 desc "updates #{CONFIG["project"]} (git pull)"
