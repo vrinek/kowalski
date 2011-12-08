@@ -129,8 +129,8 @@ task :up do
         threads << Thread.new { prepare.sitemaps }
         threads << Thread.new { prepare.mongo }
         threads << Thread.new { prepare.redis }
-        threads << Thread.new { prepare.mysql }
         threads.map(&:join)
+        prepare.mysql
         prepare.sphinx
 
         run_hooks :after_up
