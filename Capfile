@@ -127,9 +127,10 @@ task :up do
 
         threads = []
         threads << Thread.new { prepare.sitemaps }
-        threads << Thread.new { prepare.mongo }
         threads << Thread.new { prepare.redis }
         threads.map(&:join)
+
+        prepare.mongo
         prepare.mysql
         prepare.sphinx
 
