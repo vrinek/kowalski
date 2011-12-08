@@ -70,6 +70,7 @@ namespace :prepare do
             bundle_exec "rake mysql:stop RAILS_ENV=test"
             bundle_exec "rake mysql:init_db RAILS_ENV=test"
             bundle_exec "rake mysql:start RAILS_ENV=test"
+            bundle_exec "rake db:schema:dump"
             bundle_exec "rake mysql:prepare"
         end
     end
