@@ -13,7 +13,7 @@ def bundle_exec(cmd, runit = true)
 end
 
 def tablog(a, b, c = nil)
-    puts "#{a.to_s.rjust(40)} : #{b.to_s.center(12)} : #{c}"
+    puts "#{a.to_s.rjust(40)} : #{b.to_s.center(16)} : #{c}"
 end
 
 def set_status(status, runit = true)
