@@ -277,7 +277,7 @@ task :run_specs do
                     "#{test_env}GEM_HOME=~/.rubygems SUB_ENV=#{CONFIG["code"]} ~/.rubygems/bin/bundle exec rspec --drb --drb-port #{spork_port} --format progress #{t[:specs]*' '} 2>/dev/null"
                 ] * ' && '
                 t[:results] += `ssh #{CONFIG["runners"]["user"]}@#{hostname} '#{cmd}'`
-                unless t[:results].split("\n").last =~ /\d+ examples?, \d+ failures?/
+                unless t[:results].split("\n").any?{|l| l =~ /\d+ examples?, \d+ failures?/}
                     @errors += 1
                     @errors_log << t[:results]
                 end
@@ -293,6 +293,7 @@ task :run_specs do
     all_results = @threads.map{|t| t[:results]}.join
     examples = all_results.scan(/(\d+) examples?/).flatten.map(&:to_i).reduce(&:+)
     failures = all_results.scan(/(\d+) failures?/).flatten.map(&:to_i).reduce(&:+)
+    failed_examples = all_results.scan(/^rspec \.\/spec\/.*?$/)
 
     results_filename = File.join CONFIG["master"]["main_path"], "logs", "#{Time.now.to_i}-results.log"
     require "fileutils"
@@ -300,9 +301,12 @@ task :run_specs do
     File.open(results_filename, 'w') {|f| f.write(all_results) }
 
     # Failures have a number prepended like  "3)"
-    puts "Failures:\n\n" + all_results.split("\n\n").select{|b| b =~ /^\s*\d+\)/}.join("\n\n")
+    print "\n\n\n"
+    print "Failures:\n\n" + all_results.split("\n\n").select{|b| b =~ /^\s*\d+\)/}.join("\n\n")
 
-    puts "Errors:\n\n" + @errors_log + "\n\n"
+    print "Errors:\n\n" + @errors_log + "\n\n"
+
+    print "Failed examples:\n\n" + (failed_examples * "\n") + "\n\n"
 
     total = "#{examples} examples, #{failures} failures, #{@errors} errors"
     puts "\n  TOTAL:\n  #{total}"
