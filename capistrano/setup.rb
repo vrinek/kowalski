@@ -133,6 +133,12 @@ namespace :setup do
     end
 
     task :nuke do
-        run "rm -rf ~/*"
+        task :all do
+            run "rm -rf ~/*"
+        end
+
+        task :project do
+            run "rm -rf ~/yogurt/"
+        end
     end
 end
