@@ -39,9 +39,7 @@ namespace :prepare do
 
             host_threads.each(&:join)
         else
-            bundle_exec "rake sphinx:stop RAILS_ENV=test"
-            bundle_exec "rake sphinx:generate_file RAILS_ENV=test"
-            bundle_exec "rake sphinx:index RAILS_ENV=test"
+            bundle_exec "rake kowalski:sphinx:up"
         end
     end
 
