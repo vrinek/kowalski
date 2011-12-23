@@ -286,7 +286,7 @@ task :run_specs do
                 @received_files += t[:specs]
             end
 
-            system "ssh #{CONFIG["runners"]["user"]}@#{hostname} '#{set_status "done running specs"}'"
+            system "ssh #{CONFIG["runners"]["user"]}@#{hostname} '#{set_status "done running specs", false}'"
         end
     end
 
