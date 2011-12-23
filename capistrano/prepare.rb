@@ -8,8 +8,7 @@ namespace :prepare do
     desc "fires up mongo"
     task :mongo, :roles => :alive_hosts do
         set_status "getting up (mongo)"
-        bundle_exec "rake mongo:stop RAILS_ENV=test"
-        bundle_exec "rake mongo:start RAILS_ENV=test"
+        bundle_exec "rake kowalski:mongo:up"
     end
 
     desc "fires up redis"

@@ -105,10 +105,10 @@ task :down do
 
     git_daemon.down
     spork.down
-    bundle_exec "rake kowalski:sphinx:down"
 
+    bundle_exec "rake kowalski:sphinx:down"
     bundle_exec "rake mysql:stop"
-    bundle_exec "rake mongo:stop RAILS_ENV=test"
+    bundle_exec "rake kowalski:mongo:down"
     bundle_exec "rake redis:stop RAILS_ENV=test; true" # usually fails
 
     run_hooks :after_down
