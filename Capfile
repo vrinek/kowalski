@@ -108,7 +108,6 @@ task :down do
 
     bundle_exec "rake kowalski:down"
     bundle_exec "rake mysql:stop"
-    bundle_exec "rake redis:stop RAILS_ENV=test; true" # usually fails
 
     run_hooks :after_down
 
@@ -125,11 +124,7 @@ task :up do
         update
         run "mkdir -p ~/.redis-temp"
 
-        threads = []
-        threads << Thread.new { prepare.sitemaps }
-        threads << Thread.new { prepare.redis }
-        threads.map(&:join)
-
+        prepare.sitemaps
         prepare.mysql
         bundle_exec "rake kowalski:up"
 
