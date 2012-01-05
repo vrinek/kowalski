@@ -106,9 +106,8 @@ task :down do
     git_daemon.down
     spork.down
 
-    bundle_exec "rake kowalski:sphinx:down"
+    bundle_exec "rake kowalski:down"
     bundle_exec "rake mysql:stop"
-    bundle_exec "rake kowalski:mongo:down"
     bundle_exec "rake redis:stop RAILS_ENV=test; true" # usually fails
 
     run_hooks :after_down
@@ -131,9 +130,8 @@ task :up do
         threads << Thread.new { prepare.redis }
         threads.map(&:join)
 
-        prepare.mongo
         prepare.mysql
-        prepare.sphinx
+        bundle_exec "rake kowalski:up"
 
         run_hooks :after_up
 
