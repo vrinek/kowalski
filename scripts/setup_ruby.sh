@@ -1,4 +1,5 @@
-RUBY_VERSION='1.8.7-p352'
+RUBY_VERSION='1.8.7'
+RUBY_PATCHLEVEL='352'
 
 cd $HOME
 touch $HOME/.bash_profile
@@ -24,7 +25,7 @@ fi
 source $HOME/.bash_profile
 
 if [ "$( which ruby )" = "$HOME/.rbenv/shims/ruby" ]; then
-    if [ "$( ruby --version | grep 1.8.7 | grep 'patchlevel 352' )" != "" ]; then
+    if [ "$( ruby --version | grep $RUBY_VERSION | grep 'patchlevel $RUBY_PATCHLEVEL' )" != "" ]; then
         NEED_TO_INSTALL_RUBY=false
     else
         NEED_TO_INSTALL_RUBY=true
@@ -34,9 +35,9 @@ else
 fi
 
 if [ $NEED_TO_INSTALL_RUBY = true ]; then
-    echo "Installing ruby $RUBY_VERSION"
-    rbenv install $RUBY_VERSION
-    rbenv global $RUBY_VERSION
+    echo "Installing ruby $RUBY_VERSION-p$RUBY_PATCHLEVEL"
+    rbenv install $RUBY_VERSION-p$RUBY_PATCHLEVEL
+    rbenv global $RUBY_VERSION-p$RUBY_PATCHLEVEL
 else
-    echo "Ruby $RUBY_VERSION is installed"
+    echo "Ruby $RUBY_VERSION-p$RUBY_PATCHLEVEL is installed"
 fi
