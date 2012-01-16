@@ -25,7 +25,7 @@ fi
 source $HOME/.bash_profile
 
 if [ "$( which ruby )" = "$HOME/.rbenv/shims/ruby" ]; then
-    if [ "$( ruby --version | grep $RUBY_VERSION | grep 'patchlevel $RUBY_PATCHLEVEL' )" != "" ]; then
+    if [ "$( ruby --version | grep '$RUBY_VERSIONp$RUBY_PATCHLEVEL' )" != "" ]; then
         NEED_TO_INSTALL_RUBY=false
     else
         NEED_TO_INSTALL_RUBY=true
