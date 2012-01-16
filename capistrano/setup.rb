@@ -135,6 +135,14 @@ namespace :setup do
     namespace :nuke do
         task :all do
             run "rm -rf ~/*"
+            run "rm -rf ~/.rbenv"
+            run "rm -rf ~/.bash_profile"
+            run "rm -rf ~/.bash_rc"
+            run "rm -rf ~/.gems"
+            run "rm -rf ~/.profile"
+            run "rm -rf ~/.redis-temp"
+            run "rm -rf ~/.rubygems"
+            run "rm -rf ~/.yogurt_status"
         end
 
         task :project do
