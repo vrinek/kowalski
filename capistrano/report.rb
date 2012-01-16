@@ -15,7 +15,7 @@ end
 desc "reports versions and last commit"
 task :report, :roles => :alive_hosts do
     {
-        "ruby --version" => ["1.8.7", "patchlevel 352"],
+        "ruby --version" => "1.9.3p0",
         "searchd --help | head -1" => [CONFIG["services"]["sphinx"]["version"]],
         "mongod --version | head -1" => [CONFIG["services"]["mongo"]["version"]],
         "redis-server --version" => [CONFIG["services"]["redis"]["version"]]
