@@ -132,7 +132,7 @@ namespace :setup do
         tmpfs
     end
 
-    task :nuke do
+    namespace :nuke do
         task :all do
             run "rm -rf ~/*"
         end
