@@ -191,6 +191,7 @@ task :run_specs do
     @all_files.map! do |file|
         file.sub(%r[#{CONFIG["master"]["main_path"]}/#{CONFIG["project"]}], "/home/#{CONFIG["runners"]["user"]}/#{CONFIG["project"]}")
     end
+    @all_files.shuffle!
     @sent_files = []
     @received_files = []
     puts "#{@all_files.size} spec_files found"
