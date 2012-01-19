@@ -301,7 +301,7 @@ task :run_specs do
 
     print "Errors:\n\n" + @errors_log + "\n\n"
 
-    print "Failed examples:\n\n" + (failed_examples * "\n") + "\n\n"
+    print "Failed examples:\n\n" + (failed_examples.sort * "\n") + "\n\n"
 
     total = "#{examples} examples, #{failures} failures, #{@errors} errors"
     puts "\n  TOTAL:\n  #{total}"
