@@ -142,11 +142,11 @@ namespace :setup do
             run "rm -rf ~/.profile"
             run "rm -rf ~/.redis-temp"
             run "rm -rf ~/.rubygems"
-            run "rm -rf ~/.yogurt_status"
+            run "rm -rf ~/.#{CONFIG["project"]}_status"
         end
 
         task :project do
-            run "rm -rf ~/yogurt/"
+            run "rm -rf ~/#{CONFIG["project"]}/"
         end
     end
 end
