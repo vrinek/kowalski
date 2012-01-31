@@ -243,7 +243,7 @@ task :run_specs do
             end
 
             spork_time = 0
-            until (`ssh #{CONFIG["runners"]["user"]}@#{hostname} "netstat -nl | grep #{spork_port}"`.strip != "")
+            until (`ssh #{CONFIG["runners"]["user"]}@#{hostname} "pgrep -f spork -u #{CONFIG["runners"]["user"]}"`.strip != "")
                 sleep 0.1
                 spork_time += 0.1
                 raise "Spork has disappeared" unless system("ssh #{CONFIG["runners"]["user"]}@#{hostname} \"pgrep -f spork -u #{CONFIG["runners"]["user"]} 1>/dev/null\"")
