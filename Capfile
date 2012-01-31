@@ -242,11 +242,14 @@ task :run_specs do
                 system "ssh #{CONFIG["runners"]["user"]}@#{hostname} 'source ~/.bash_profile; cd ~/#{CONFIG["project"]}; " + spork_up_cmd
             end
 
+            t = 0
             until (`ssh #{CONFIG["runners"]["user"]}@#{hostname} "netstat -nl | grep #{spork_port}"`.strip != "")
                 sleep 0.1
+                t += 0.1
                 raise "Spork has disappeared" unless system("ssh #{CONFIG["runners"]["user"]}@#{hostname} \"pgrep -f spork -u #{CONFIG["runners"]["user"]} 1>/dev/null\"")
             end
             # spork is up
+            putting.synchronize { tablog "spork took #{t} seconds to get up", "#{hostname}.#{core}" }
 
             # renicing the processes
             if CONFIG["runners"]["renice"]
