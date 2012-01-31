@@ -278,7 +278,18 @@ task :run_specs do
         end
     end
 
+    # wait for all the spec files to be processed
+    Thead.new do
+        until shifting.synchronize { @all_files.empty? && @sent_files.size == @received_files.size }
+            sleep 0.5
+        end
+
+        # some threads might be in limbo (spork not starting), so we kill them
+        @threads.each(&:kill)
+    end
+
     @threads.each(&:join)
+
     all_results = @threads.map{|t| t[:results]}.join
     examples = all_results.scan(/(\d+) examples?/).flatten.map(&:to_i).reduce(&:+)
     failures = all_results.scan(/(\d+) failures?/).flatten.map(&:to_i).reduce(&:+)
