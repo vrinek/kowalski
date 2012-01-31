@@ -279,7 +279,7 @@ task :run_specs do
     end
 
     # wait for all the spec files to be processed
-    Thead.new do
+    Thread.new do
         until shifting.synchronize { @all_files.empty? && @sent_files.size == @received_files.size }
             sleep 0.5
         end
