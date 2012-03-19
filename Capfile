@@ -252,6 +252,8 @@ task :run_specs do
             t[:results] += "    Results for #{hostname} (#{core})\n"
             t[:results] += "===============================\n\n"
 
+            t[:specs_and_results] = Hash.new
+
             loop do
                 t[:specs] = shifting.synchronize { @all_files.shift(batch_size.call) }
                 break if t[:specs].empty?
@@ -265,7 +267,11 @@ task :run_specs do
                     set_status("running specs", false),
                     "#{test_env}GEM_HOME=~/.rubygems SUB_ENV=#{CONFIG["code"]} ~/.rubygems/bin/bundle exec rspec --drb --drb-port #{spork_port} --format progress #{t[:specs]*' '} 2>/dev/null"
                 ] * ' && '
-                t[:results] += `ssh #{CONFIG["runners"]["user"]}@#{hostname} '#{cmd}'`
+
+                result = `ssh #{CONFIG["runners"]["user"]}@#{hostname} '#{cmd}'`
+                t[:specs_and_results][t[:specs]] = result
+                t[:results] += result
+
                 unless t[:results].split("\n").any?{|l| l =~ /\d+ examples?, \d+ failures?/}
                     @errors += 1
                     @errors_log << t[:results]
@@ -303,15 +309,26 @@ task :run_specs do
     # Failures have a number prepended like  "3)"
     print "\n\n\n"
     print "Failures:\n\n" + all_results.split("\n\n").select{|b| b =~ /^\s*\d+\)/}.join("\n\n")
-
     print "Errors:\n\n" + @errors_log + "\n\n"
-
     print "Failed examples:\n\n" + (failed_examples.sort * "\n") + "\n\n"
 
     total = "#{examples} examples, #{failures} failures, #{@errors} errors"
     puts "\n  TOTAL:\n  #{total}"
     system "echo '#{Time.now} - #{total}' >> results.log"
     spork.down
+
+    begin
+        all_specs_with_results = @threads.inject(Hash.new) do |hash, thread|
+            hash.merge thread[:specs_and_results]
+        end
+
+        require "yaml"
+        results_filename = File.join CONFIG["master"]["main_path"], "logs", "#{Time.now.to_i}-results-with-specs.yml"
+        FileUtils.mkdir_p File.join(CONFIG["master"]["main_path"], "logs")
+        File.open(results_filename, 'w') {|f| f.write(all_specs_with_results.to_yaml) }
+    rescue
+        puts "saving of specs-and-results failed"
+    end
 end
 
 namespace :spork do
