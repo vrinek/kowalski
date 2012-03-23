@@ -231,6 +231,7 @@ task :run_specs do
         p host
         @threads << Thread.new do
             t = Thread.current
+            t[:host] = host
             hostname, core = host.split(".")
             test_env = CONFIG["parallel"] ? "TEST_ENV_NUMBER=#{core} " : ""
 
@@ -319,7 +320,7 @@ task :run_specs do
 
     begin
         all_specs_with_results = @threads.inject(Hash.new) do |hash, thread|
-            hash.merge thread[:specs_and_results]
+            hash.merge thread[:host] => thread[:specs_and_results]
         end
 
         require "yaml"
