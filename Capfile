@@ -271,7 +271,7 @@ task :run_specs do
                 t[:specs_and_results][t[:specs]] = result
                 t[:results] += result
 
-                end_result = t[:results].split("\n").select?{|l| l =~ /\d+ examples?, \d+ failures?/}[0]
+                end_result = t[:results].split("\n").select{|l| l =~ /\d+ examples?, \d+ failures?/}[0]
 
                 unless end_result
                     @errors += 1
