@@ -167,7 +167,7 @@ namespace :git_daemon do
     desc "fires up the git daemon for the runners to pull from"
     task :up do
         system "git daemon --base-path=#{CONFIG["master"]["main_path"]} --detach"
-        while `pgrep git-daemon`.strip == ""
+        while `netstat -nltp | grep git-daemon`.strip == ""
             sleep 0.1
         end
     end
