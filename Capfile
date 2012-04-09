@@ -300,7 +300,8 @@ task :run_specs do
     failures = all_results.scan(/(\d+) failures?/).flatten.map(&:to_i).reduce(&:+)
     failed_examples = all_results.scan(/^rspec \.\/spec\/.*?$/)
 
-    results_filename = File.join CONFIG["master"]["main_path"], "logs", "#{Time.now.to_i}-results.log"
+    timestamp = Time.now.strftime('%Y%m%d%H%M')
+    results_filename = File.join CONFIG["master"]["main_path"], "logs", "#{timestamp}-results.log"
     require "fileutils"
     FileUtils.mkdir_p File.join(CONFIG["master"]["main_path"], "logs")
     File.open(results_filename, 'w') {|f| f.write(all_results) }
