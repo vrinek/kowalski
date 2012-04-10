@@ -46,7 +46,7 @@ namespace :prepare do
     task :mysql, :roles => :alive_hosts do
         set_status "getting up (mysql)"
 
-        system bundle_exec('rake db:migrate', false)
+        system "cd ../#{CONFIG["project"]} && bundle exec rake db:migrate"
 
         if CONFIG["parallel"]
             hosts = roles[:alive_hosts].map(&:host)
