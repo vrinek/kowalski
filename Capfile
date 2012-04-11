@@ -273,11 +273,13 @@ task :run_specs do
             loop do
                 t[:specs] = shifting.synchronize do
                     # Always get a file
-                    biggest_file_fitting = @line_counts.shift
-
-                    lines_to_send = (lines_left * line_step).to_i - biggest_file_fitting[0]
-                    lines_left -= biggest_file_fitting[0]
-                    files = [biggest_file_fitting]
+                    if biggest_file_fitting = @line_counts.shift
+                        lines_to_send = (lines_left * line_step).to_i - biggest_file_fitting[0]
+                        lines_left -= biggest_file_fitting[0]
+                        files = [biggest_file_fitting]
+                    else
+                        files = []
+                    end
 
                     until biggest_file_fitting.nil?
                         biggest_file_fitting = @line_counts.select{|c,_| c <= lines_to_send}.first
