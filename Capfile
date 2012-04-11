@@ -271,14 +271,14 @@ task :run_specs do
                 t[:specs_and_results][t[:specs]] = result
                 t[:results] += result
 
-                t[:end_result] = t[:results].split("\n").select{|l| l =~ /\d+ examples?, \d+ failures?/}[0]
+                t[:last_result] = t[:results].split("\n").select{|l| l =~ /\d+ examples?, \d+ failures?/}.last
 
-                unless t[:end_result]
+                unless t[:last_result]
                     @errors += 1
                     @errors_log << t[:results]
                 end
 
-                putting.synchronize { tablog nil, "#{hostname}.#{core}", t[:end_result] || 'ERROR' }
+                putting.synchronize { tablog nil, "#{hostname}.#{core}", t[:last_result] || 'ERROR' }
                 @received_files += t[:specs]
             end
 
