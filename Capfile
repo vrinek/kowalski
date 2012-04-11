@@ -186,9 +186,6 @@ task :run_specs do
     run "rm ~/#{CONFIG["project"]}/log/test.log; true"
 
     @all_files = CONFIG["spec_folders"].map{|f| `find #{CONFIG["master"]["main_path"]}/#{CONFIG["project"]}/spec/#{f}/ -iname "*.rb"`.split("\n")}.flatten
-    @all_files.map! do |file|
-        file.sub(%r[#{CONFIG["master"]["main_path"]}/#{CONFIG["project"]}], "/home/#{CONFIG["runners"]["user"]}/#{CONFIG["project"]}")
-    end
 
     # Spliting spec files by line count
     @line_counts = `wc -l #{@all_files * ' '}`.split("\n").map do |line|
@@ -197,6 +194,14 @@ task :run_specs do
 
     # Last element in the array is the total
     total_lines = @line_counts.pop[0]
+
+    @line_counts.map! do |count, file|
+        [
+            count,
+            file.sub(%r[#{CONFIG["master"]["main_path"]}/#{CONFIG["project"]}],
+                "/home/#{CONFIG["runners"]["user"]}/#{CONFIG["project"]}")
+        ]
+    end
 
     # Sorted by line count descending
     @line_counts = @line_counts.sort_by{|a, _| a}.reverse
@@ -224,8 +229,6 @@ task :run_specs do
     end.flatten
 
     @threads = []
-    starting_batch = @all_files.size/(hosts.size**CONFIG["load_balance_start"].to_f).to_i
-    batch_size = lambda { [1, @all_files.size/(hosts.size).to_i, starting_batch].sort[1] }
     shifting = Mutex.new
     putting = Mutex.new
     @errors = 0
@@ -235,7 +238,7 @@ task :run_specs do
         loop do
             putting.synchronize { tablog "#{@sent_files.size} sent", "MASTER", "#{@received_files.size} received" }
             sleep 5
-            break if @all_files.empty?
+            break if lines_left == 0
         end
     end
 
