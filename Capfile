@@ -189,7 +189,21 @@ task :run_specs do
     @all_files.map! do |file|
         file.sub(%r[#{CONFIG["master"]["main_path"]}/#{CONFIG["project"]}], "/home/#{CONFIG["runners"]["user"]}/#{CONFIG["project"]}")
     end
-    @all_files.shuffle!
+
+    # Spliting spec files by line count
+    @line_counts = `wc -l #{@all_files * ' '}`.split("\n").map do |line|
+      line.strip.split.tap{|a| a[0] = a[0].to_i}
+    end # => [ [:line_count, :file_path], [:line_count, :file_path]... ]
+
+    # Last element in the array is the total
+    total_lines = @line_counts.pop[0]
+
+    # Sorted by line count descending
+    @line_counts = @line_counts.sort_by{|a, _| a}.reverse
+
+    line_step = 0.05 # start with 5%
+
+    lines_left = total_lines
     @sent_files = []
     @received_files = []
     puts "#{@all_files.size} spec_files found"
@@ -254,7 +268,30 @@ task :run_specs do
             t[:specs_and_results] = Hash.new
 
             loop do
-                t[:specs] = shifting.synchronize { @all_files.shift(batch_size.call) }
+                t[:specs] = shifting.synchronize do
+                    # Always get a file
+                    biggest_file_fitting = @line_counts.shift
+
+                    lines_to_send = (lines_left * line_step).to_i - biggest_file_fitting[0]
+                    lines_left -= biggest_file_fitting[0]
+                    files = [biggest_file_fitting]
+
+                    until biggest_file_fitting.nil?
+                        biggest_file_fitting = @line_counts.select{|c,_| c <= lines_to_send}.first
+
+                        if biggest_file_fitting
+                            @line_counts.reject!{|c| c == biggest_file_fitting}
+                            lines_to_send -= biggest_file_fitting[0]
+                            lines_left -= biggest_file_fitting[0]
+
+                            files << biggest_file_fitting
+                        end
+                    end
+
+                    # Only return the file paths
+                    files.map{|_,f| f}
+                end
+
                 break if t[:specs].empty?
 
                 putting.synchronize { tablog "sending #{t[:specs].size} specs (#{@all_files.size} left)", "#{hostname}.#{core}" }
