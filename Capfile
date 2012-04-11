@@ -206,7 +206,7 @@ task :run_specs do
     # Sorted by line count descending
     @line_counts = @line_counts.sort_by{|a, _| a}.reverse
 
-    line_step = 0.05 # start with 5%
+    line_step = 0.1 # start with 10%
 
     lines_left = total_lines
     @sent_files = []
@@ -297,7 +297,7 @@ task :run_specs do
 
                 break if t[:specs].empty?
 
-                putting.synchronize { tablog "sending #{t[:specs].size} specs (#{@all_files.size} left)", "#{hostname}.#{core}" }
+                putting.synchronize { tablog "sending #{t[:specs].size} specs (#{@line_counts.size} left)", "#{hostname}.#{core}" }
 
                 @sent_files += t[:specs]
                 cmd = [
