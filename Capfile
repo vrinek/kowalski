@@ -206,7 +206,7 @@ task :run_specs do
     # Sorted by line count descending
     @line_counts = @line_counts.sort_by{|a, _| a}.reverse
 
-    line_step = 0.1 # start with 10%
+    line_step = 0.05 # start with 5%
 
     lines_left = total_lines
     @sent_files = []
