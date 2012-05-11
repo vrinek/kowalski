@@ -242,6 +242,16 @@ task :run_specs do
         end
     end
 
+    @timeout = Thread.new do
+        sleep 540 # 9 minutes
+        putting.synchronize { tablog "Timeout closing in...", "REAPER", nil }
+
+        sleep 60 # 1 minute
+        putting.synchronize { tablog "Timeout reached", "REAPER", nil }
+
+        @threads.each(&:kill)
+    end
+
     hosts.each do |host|
         p host
         @threads << Thread.new do
