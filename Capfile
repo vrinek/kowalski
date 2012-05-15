@@ -350,6 +350,7 @@ task :run_specs do
     end
 
     @threads.each(&:join)
+    @timeout.kill
 
     all_results = @threads.map{|t| t[:results]}.join
     examples = all_results.scan(/(\d+) examples?/).flatten.map(&:to_i).reduce(&:+)
