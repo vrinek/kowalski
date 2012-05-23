@@ -250,6 +250,16 @@ task :run_specs do
         putting.synchronize { tablog "Timeout reached", "REAPER", nil }
 
         @threads.each(&:kill)
+        @reaper.kill
+    end
+
+    @reaper = Thread.new do
+        until @line_counts.empty?
+            sleep 5
+        end
+
+        @threads.each(&:kill)
+        @timeout.kill
     end
 
     hosts.each do |host|
@@ -345,18 +355,9 @@ task :run_specs do
         end
     end
 
-    # wait for all the spec files to be processed
-    Thread.new do
-        until shifting.synchronize { @all_files.empty? && @sent_files.size == @received_files.size }
-            sleep 0.5
-        end
-
-        # some threads might be in limbo (spork not starting), so we kill them
-        @threads.each(&:kill)
-    end
-
     @threads.each(&:join)
     @timeout.kill
+    @reaper.kill
 
     all_results = @threads.map{|t| t[:results]}.join
     examples = all_results.scan(/(\d+) examples?/).flatten.map(&:to_i).reduce(&:+)
