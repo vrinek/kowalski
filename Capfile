@@ -323,7 +323,18 @@ task :run_specs do
                 t[:specs_and_results][t[:specs]] = result
                 t[:results] += result
 
-                t[:last_result] = t[:results].split("\n").select{|l| l =~ /\d+ examples?, \d+ failures?/}.last
+                lines = begin
+                    t[:results].split(/\n/)
+                rescue => e
+                    p e
+                    p t[:results]
+                    p [:encoding, t[:results].encoding]
+                    p [:valid_encoding?, t[:results].valid_encoding?]
+                    p [:host, t[:host]]
+                    []
+                end
+
+                t[:last_result] = lines.select{|l| l =~ /\d+ examples?, \d+ failures?/}.last
 
                 unless t[:last_result]
                     @errors += 1
