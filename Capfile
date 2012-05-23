@@ -320,20 +320,15 @@ task :run_specs do
                 ] * ' && '
 
                 result = `ssh #{CONFIG["runners"]["user"]}@#{hostname} '#{cmd}'`
+
+                unless result.valid_encoding?
+                    result.force_encoding('utf-8')
+                end
+
                 t[:specs_and_results][t[:specs]] = result
                 t[:results] += result
 
-                lines = begin
-                    t[:results].split(/\n/)
-                rescue => e
-                    p e
-                    p t[:results]
-                    p [:encoding, t[:results].encoding]
-                    p [:valid_encoding?, t[:results].valid_encoding?]
-                    p [:host, t[:host]]
-                    []
-                end
-
+                lines = t[:results].split(/\n/)
                 t[:last_result] = lines.select{|l| l =~ /\d+ examples?, \d+ failures?/}.last
 
                 unless t[:last_result]
