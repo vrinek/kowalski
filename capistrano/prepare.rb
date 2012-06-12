@@ -14,8 +14,7 @@ namespace :prepare do
     desc "fires up redis"
     task :redis, :roles => :alive_hosts do
         set_status "getting up (redis)"
-        bundle_exec "rake redis:stop RAILS_ENV=test"
-        bundle_exec "rake redis:start RAILS_ENV=test"
+        bundle_exec "rake redis:stop redis:start RAILS_ENV=test"
     end
 
     desc "initializes and fires up sphinx"
@@ -66,9 +65,7 @@ namespace :prepare do
 
             host_threads.each(&:join)
         else
-            bundle_exec "rake mysql:stop RAILS_ENV=test"
-            bundle_exec "rake mysql:init_db RAILS_ENV=test"
-            bundle_exec "rake mysql:start RAILS_ENV=test"
+            bundle_exec "rake mysql:stop mysql:init_db mysql:start RAILS_ENV=test"
             bundle_exec "rake mysql:prepare"
         end
     end
