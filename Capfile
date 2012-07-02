@@ -278,7 +278,7 @@ task :run_specs do
         @threads << Thread.new do
             t = Thread.current
             t[:host] = host
-            hostname, core = host.split(".")
+            hostname, core = host.scan(/^(.*)\.(\d+)$/).flatten
             test_env = CONFIG["parallel"] ? "TEST_ENV_NUMBER=#{core} " : ""
 
             # prepping spork
