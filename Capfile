@@ -41,21 +41,6 @@ def alive_hosts
     return @alive_hosts
 end
 
-def nu_run(command)
-    hosts = roles[:alive_hosts].map(&:host)
-
-    host_threads = []
-    hosts.each do |hostname|
-        puts "+++ [#{hostname}] : #{command}"
-
-        host_threads << Thread.new do
-            puts ssh(hostname, command)
-        end
-    end
-
-    host_threads.each(&:join)
-end
-
 def up_hosts
     return @up_hosts if @up_hosts
 
