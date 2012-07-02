@@ -89,6 +89,11 @@ def ssh(hostname, command)
     `ssh #{CONFIG["runners"]["user"]}@#{hostname} '#{command}'`
 end
 
+def run_or_die(command)
+    puts "Localy running \"#{command}\""
+    raise 'FAILED!!!' unless system(command)
+end
+
 role :alive_hosts, *alive_hosts
 role :up_hosts, *up_hosts
 set :user, CONFIG["code"]

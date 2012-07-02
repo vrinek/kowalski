@@ -45,9 +45,7 @@ namespace :prepare do
     task :mysql, :roles => :alive_hosts do
         set_status "getting up (mysql)"
 
-        unless system("cd ../#{CONFIG["project"]} && bundle exec rake db:migrate --trace")
-            raise 'rake db:migrate failed'
-        end
+        run_or_die "cd ../#{CONFIG["project"]} && bundle exec rake db:migrate --trace"
 
         if CONFIG["parallel"]
             hosts = roles[:alive_hosts].map(&:host)
