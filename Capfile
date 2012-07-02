@@ -166,15 +166,19 @@ end
 namespace :git_daemon do
     desc "fires up the git daemon for the runners to pull from"
     task :up do
+        puts "Getting git-daemon up..."
         system "git daemon --base-path=#{CONFIG["master"]["main_path"]} --detach"
         while `netstat -nltp 2> /dev/null | grep git-daemon`.strip == ""
             sleep 0.1
         end
+        puts "git-daemon is up!"
     end
 
     desc "tears down the git daemon"
     task :down do
+        puts "Killing git-daemon..."
         system "killall git-daemon"
+        puts "Killed!"
     end
 end
 
