@@ -15,6 +15,7 @@ master:
   hostname: localhost
   sinatra_path: ~/path/to/sinatra/app
   main_path: ~/path/that/includes/project/on/master
+  git_daemon_port: 456789
   hooks:
     before_down: "echo 'runners are going down'"
     after_up: "echo 'runners are back up'"
