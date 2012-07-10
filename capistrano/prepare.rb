@@ -65,8 +65,13 @@ namespace :prepare do
 
             host_threads.each(&:join)
         else
-            bundle_exec "rake mysql:stop mysql:init_db mysql:start RAILS_ENV=test"
-            bundle_exec "rake mysql:prepare"
+            if CONFIG["runners"]["load_mysql"]
+                run CONFIG["runners"]["load_mysql"], :shell => false
+            else
+                bundle_exec "rake mysql:stop mysql:init_db mysql:start RAILS_ENV=test"
+                bundle_exec "rake mysql:prepare"
+            end
+
         end
     end
 end
