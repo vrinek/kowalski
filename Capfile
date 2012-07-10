@@ -165,6 +165,8 @@ task :update, :roles => :alive_hosts do
 
     git_daemon.down
 
+    prepare.mysql
+
     set_status "up-to-date"
 end
 
