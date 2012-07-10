@@ -70,7 +70,7 @@ def run_hooks(hook)
         if cmd =~ /^(thor|rake) /
             bundle_exec cmd
         else
-            run cmd
+            run cmd, :shell => false
         end
     end
 end
