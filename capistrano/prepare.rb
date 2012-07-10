@@ -45,8 +45,6 @@ namespace :prepare do
     task :mysql, :roles => :alive_hosts do
         set_status "getting up (mysql)"
 
-        run_or_die "cd #{CONFIG["master"]["main_path"]}/#{CONFIG["project"]} && bundle exec rake db:migrate"
-
         if CONFIG["parallel"]
             hosts = roles[:alive_hosts].map(&:host)
 
@@ -65,13 +63,7 @@ namespace :prepare do
 
             host_threads.each(&:join)
         else
-            if CONFIG["runners"]["load_mysql"]
-                run CONFIG["runners"]["load_mysql"], :shell => false
-            else
-                bundle_exec "rake mysql:stop mysql:init_db mysql:start RAILS_ENV=test"
-                bundle_exec "rake mysql:prepare"
-            end
-
+            run CONFIG["runners"]["load_mysql"], :shell => false
         end
     end
 end
