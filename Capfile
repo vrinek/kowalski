@@ -130,7 +130,6 @@ task :up do
         run "mkdir -p ~/.redis-temp"
 
         prepare.sitemaps
-        prepare.mysql
         bundle_exec "rake kowalski:up"
 
         run_hooks :after_up
