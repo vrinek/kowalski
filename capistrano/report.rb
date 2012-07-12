@@ -2,7 +2,7 @@ desc "reports the status of the services"
 task :status do
     run "cat ~/.#{CONFIG["project"]}_status"
 
-    cmd = %w[mysqld searchd mongod redis-server].map do |service|
+    cmd = %w[mysqld searchd mongod redis-server java].map do |service|
         "if [ \"$( netstat -nltp 2>/dev/null | grep #{service} )\" ]; then echo -e \"\\e[32m#{service} is up\\e[0m\"; else echo -e \"\\e[31m#{service} is down\\e[0m\"; fi"
     end.join('; ')
 
