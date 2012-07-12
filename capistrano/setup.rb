@@ -65,6 +65,14 @@ namespace :setup do
         cmd << 'fi'
 
         run cmd, :shell => false
+
+        if CONFIG["services"]["elastic"]["plugins"]
+            cmd = CONFIG["services"]["elastic"]["plugins"].map do |plugin|
+                "/home/#{CONFIG["runners"]["user"]}/elastic/bin/plugin -install #{plugin}"
+            end * ' && '
+
+            run cmd, :shell => false
+        end
     end
 
     desc "sets up redis 2.4.2"
