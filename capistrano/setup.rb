@@ -44,6 +44,29 @@ namespace :setup do
         run "~/prepare/setup_tmpfs.sh", :shell => false
     end
 
+    desc "sets up elasticsearch"
+    task :elastic, :roles => :alive_hosts do
+        raise "There are no instructions for elasticsearch install in kowalski.yml" if CONFIG["services"]["elastic"].nil? or CONFIG["services"]["elastic"]["install"].empty?
+
+        install_elastic = ([
+            "mkdir -p /home/#{CONFIG["runners"]["user"]}/src",
+            "mkdir -p /home/#{CONFIG["runners"]["user"]}/bin",
+            "rm -rf /home/#{CONFIG["runners"]["user"]}/src/elasticsearch*",
+            "cd /home/#{CONFIG["runners"]["user"]}/src"
+        ] + CONFIG["services"]["elastic"]["install"] + [
+            "echo 'export PATH=\"/home/#{CONFIG["runners"]["user"]}/bin:$PATH\"' >> ~/.bash_profile"
+        ]) * " && "
+
+        cmd = ''
+        cmd << "source /home/#{CONFIG["runners"]["user"]}/.bash_profile && "
+        cmd << 'if [ "$( elasticsearch -v | grep \''+CONFIG["services"]["elastic"]["version"].gsub(/\./, "\\.")+'\' )" ]; '
+        cmd <<     'then echo "elasticsearch is OK"; '
+        cmd <<     "else #{install_elastic}; "
+        cmd << 'fi'
+
+        run cmd, :shell => false
+    end
+
     desc "sets up redis 2.4.2"
     task :redis, :roles => :alive_hosts do
         raise "There are no instructions for redis install in kowalski.yml" if CONFIG["services"]["redis"].nil? or CONFIG["services"]["redis"]["install"].empty?
