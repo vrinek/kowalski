@@ -338,7 +338,11 @@ task :run_specs do
                     "source ~/.bash_profile",
                     "cd ~/#{CONFIG["project"]}",
                     set_status("running specs", false),
-                    "#{test_env}GEM_HOME=~/.rubygems SUB_ENV=#{CONFIG["code"]} ~/.rubygems/bin/bundle exec rspec --drb --drb-port #{spork_port} --format progress #{t[:specs]*' '} 2>/dev/null"
+                    "#{test_env}GEM_HOME=~/.rubygems SUB_ENV=#{CONFIG["code"]} " <<
+                        "~/.rubygems/bin/bundle exec rspec " <<
+                        "--drb --drb-port #{spork_port} " <<
+                        "--order random --format progress " <<
+                        "#{t[:specs]*' '} 2>/dev/null"
                 ] * ' && '
 
                 result = `ssh #{CONFIG["runners"]["user"]}@#{hostname} '#{cmd}'`
