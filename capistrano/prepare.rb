@@ -17,6 +17,13 @@ namespace :prepare do
         bundle_exec "rake redis:stop redis:start RAILS_ENV=test"
     end
 
+    desc "initializes and fires up elasticsearch"
+    task :elastic, :roles => :alive_hosts do
+        set_status "getting up (elastic)"
+
+        bundle_exec "rake elastic:start elastic:init"
+    end
+
     desc "initializes and fires up sphinx"
     task :sphinx, :roles => :alive_hosts do
         set_status "getting up (sphinx)"
