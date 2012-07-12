@@ -2,7 +2,8 @@ namespace :prepare do
     desc "prepares sitemap XMLs"
     task :sitemaps, :roles => :alive_hosts do
         set_status "getting up (sitemaps)"
-        bundle_exec "rake sitemap:dummy_sitemaps"
+
+        run CONFIG["runners"]["load_sitemaps"], :shell => false
     end
 
     desc "fires up mongo"
