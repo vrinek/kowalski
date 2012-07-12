@@ -21,7 +21,7 @@ namespace :prepare do
     task :elastic, :roles => :alive_hosts do
         set_status "getting up (elastic)"
 
-        bundle_exec "rake elastic:start elastic:init"
+        bundle_exec "RAILS_ENV=test rake elastic:start elastic:init"
     end
 
     desc "initializes and fires up sphinx"

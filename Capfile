@@ -131,7 +131,7 @@ task :up do
 
         prepare.sitemaps
         bundle_exec "rake kowalski:up"
-        bundle_exec "rake elastic:link RAILS_ENV=test"
+        bundle_exec "RAILS_ENV=test rake elastic:link"
 
         run_hooks :after_up
 
