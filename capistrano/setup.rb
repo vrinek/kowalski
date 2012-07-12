@@ -54,7 +54,7 @@ namespace :setup do
             "rm -rf /home/#{CONFIG["runners"]["user"]}/src/elasticsearch*",
             "cd /home/#{CONFIG["runners"]["user"]}/src"
         ] + CONFIG["services"]["elastic"]["install"] + [
-            "echo 'export PATH=\"/home/#{CONFIG["runners"]["user"]}/bin:$PATH\"' >> ~/.bash_profile"
+            "echo 'export PATH=\"#{File.expand_path CONFIG["services"]["elastic"]["bin_path"]}:$PATH\"' >> ~/.bash_profile"
         ]) * " && "
 
         cmd = ''
