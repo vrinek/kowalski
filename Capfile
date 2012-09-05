@@ -28,16 +28,21 @@ def alive_hosts
     threads = []
     hosts = CONFIG["runners"]["hostnames"]
     hosts = ENV['HOSTS'].split(",") if ENV['HOSTS']
+
+    print "Pinging hosts: "
     hosts.each do |host|
         threads << Thread.new do
             if system "ping -c 1 #{host} > /dev/null"
                 @alive_hosts << host
+                print "."
+            else
+                print "!"
             end
         end
     end
     threads.each(&:join)
 
-    puts "Alive runners: #{@alive_hosts * ', '}"
+    puts "\nAlive runners: #{@alive_hosts * ', '}"
     return @alive_hosts
 end
 
@@ -46,17 +51,22 @@ def up_hosts
 
     @up_hosts = []
     threads = []
+
+    print "Checking services: "
     alive_hosts.each do |host|
         threads << Thread.new do
             netstat = `ssh #{CONFIG["runners"]["user"]}@#{host} 'netstat -nltp 2>/dev/null'`
             if (%w[mysqld searchd mongod redis-server] - netstat.scan(/\d+\/([^\s]+)/).flatten).empty?
                 @up_hosts << host
+                puts "."
+            else
+                puts "!"
             end
         end
     end
     threads.each(&:join)
 
-    puts "Up runners: #{@up_hosts * ', '}"
+    puts "\nUp runners: #{@up_hosts * ', '}"
     return @up_hosts
 end
 
