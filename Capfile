@@ -58,9 +58,9 @@ def up_hosts
             netstat = `ssh #{CONFIG["runners"]["user"]}@#{host} 'netstat -nltp 2>/dev/null'`
             if (%w[mysqld searchd mongod redis-server] - netstat.scan(/\d+\/([^\s]+)/).flatten).empty?
                 @up_hosts << host
-                puts "."
+                print "."
             else
-                puts "!"
+                print "!"
             end
         end
     end
