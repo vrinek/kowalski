@@ -11,9 +11,8 @@ task :status do
     run cmd, :shell => false
 end
 
-
-desc "reports versions and last commit"
-task :report, :roles => :alive_hosts do
+desc "reports versions"
+task :versions, :roles => :alive_hosts do
     {
         "ruby --version" => ["1.9.3p0"],
         "searchd --help | head -1" => [CONFIG["services"]["sphinx"]["version"]],
@@ -27,9 +26,14 @@ task :report, :roles => :alive_hosts do
     end
 
     run "git --version"
+end
+
+desc "reports last commit, disk space and services"
+task :report, :roles => :alive_hosts do
     run "cd ~/#{CONFIG["project"]} && git clean -n -d"
     run "cd ~/#{CONFIG["project"]} && git status --short"
     run "cd #{CONFIG["project"]} && git log -1"
+
     run "df -h; true"
     run "du -sh ~"
 
