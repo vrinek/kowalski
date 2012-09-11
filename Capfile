@@ -43,6 +43,7 @@ def alive_hosts
     threads.each(&:join)
 
     puts "\nAlive runners: #{@alive_hosts * ', '}"
+    puts "Dead runners: #{hosts - @alive_hosts}"
     return @alive_hosts
 end
 
