@@ -159,6 +159,7 @@ namespace :setup do
         redis
         mongo
         sphinx
+        elastic
         project
         tmpfs
     end
