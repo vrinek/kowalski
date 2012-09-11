@@ -266,6 +266,7 @@ task :run_specs do
         end
     end
 
+    # general timeout
     @timeout = Thread.new do
         sleep 540 # 9 minutes
         putting.synchronize { tablog "Timeout closing in...", "REAPER", nil }
@@ -277,13 +278,14 @@ task :run_specs do
         @reaper.kill
     end
 
+    # "done with specs" timeout
     @reaper = Thread.new do
-        until @line_counts.empty?
+        until @line_counts.empty? && @sent_files == @received_files
             sleep 5
         end
 
-        putting.synchronize { tablog "No more specs, will kill in 2 mins...", "REAPER", nil }
-        sleep 120
+        putting.synchronize { tablog "No more specs, will kill in 1 min...", "REAPER", nil }
+        sleep 60
 
         @threads.each(&:kill)
         @timeout.kill
