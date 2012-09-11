@@ -282,8 +282,8 @@ task :run_specs do
             sleep 5
         end
 
-        putting.synchronize { tablog "No more specs, will kill in 10", "REAPER", nil }
-        sleep 10
+        putting.synchronize { tablog "No more specs, will kill in 1 min...", "REAPER", nil }
+        sleep 60
 
         @threads.each(&:kill)
         @timeout.kill
