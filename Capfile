@@ -422,6 +422,8 @@ task :run_specs do
         results_filename = File.join CONFIG["master"]["main_path"], "logs", "#{Time.now.to_i}-results-with-specs.yml"
         FileUtils.mkdir_p File.join(CONFIG["master"]["main_path"], "logs")
         File.open(results_filename, 'w') {|f| f.write(all_specs_with_results.to_yaml) }
+
+        puts "Saved specs-and-results at #{results_filename}"
     rescue
         puts "saving of specs-and-results failed"
     end
