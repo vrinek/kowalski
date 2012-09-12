@@ -395,6 +395,7 @@ task :run_specs do
             system "ssh #{CONFIG["runners"]["user"]}@#{hostname} '#{set_status "done running specs", false}'"
             putting.synchronize { tablog "No more specs found", "#{hostname}.#{core}", "Done running specs" }
         end
+        sleep 0.5
     end
 
     @threads.each(&:join)
