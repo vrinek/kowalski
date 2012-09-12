@@ -185,12 +185,17 @@ namespace :git_daemon do
     desc "fires up the git daemon for the runners to pull from"
     task :up do
         puts "Getting git-daemon up..."
+
         cmd = "git daemon --port=#{CONFIG["master"]["git_daemon_port"]} --base-path=#{CONFIG["master"]["main_path"]} --detach --export-all"
         puts cmd
         system cmd
+
+        sleep 1
+
         while `netstat -nltp 2> /dev/null | grep git-daemon`.strip == ""
             sleep 0.1
         end
+
         puts "git-daemon is up!"
     end
 
