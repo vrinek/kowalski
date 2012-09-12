@@ -265,9 +265,12 @@ task :run_specs do
 
     @progress = Thread.new do
         loop do
-            putting.synchronize { tablog "#{@sent_files.size} sent", "MASTER", "#{@received_files.size} received" }
+            putting.synchronize {
+                tablog "#{@sent_files.size} sent", "MASTER",
+                    "#{@received_files.size} received"
+            }
+
             sleep 5
-            break if lines_left == 0
         end
     end
 
@@ -397,6 +400,7 @@ task :run_specs do
     @threads.each(&:join)
     @timeout.kill
     @reaper.kill
+    @progress.kill
 
     all_results = @threads.map{|t| t[:results]}.join
     examples = all_results.scan(/(\d+) examples?/).flatten.map(&:to_i).reduce(&:+)
