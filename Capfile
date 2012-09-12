@@ -285,7 +285,7 @@ task :run_specs do
 
     # "done with specs" timeout
     @reaper = Thread.new do
-        until @line_counts.empty? && @sent_files == @received_files
+        until @line_counts.empty? && (@sent_files - @received_files).empty?
             sleep 5
         end
 
