@@ -1,5 +1,5 @@
 RUBY_VERSION='1.9.3'
-RUBY_PATCHLEVEL='0'
+RUBY_PATCHLEVEL='194'
 
 cd $HOME
 touch $HOME/.bash_profile
@@ -25,7 +25,7 @@ fi
 source $HOME/.bash_profile
 
 if [ "$( which ruby )" = "$HOME/.rbenv/shims/ruby" ]; then
-    if [ "$( ruby --version | grep '1.9.3p0' )" != "" ]; then
+    if [ "$( ruby --version | grep '1.9.3p194' )" != "" ]; then
         NEED_TO_INSTALL_RUBY=false
     else
         NEED_TO_INSTALL_RUBY=true
