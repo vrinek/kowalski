@@ -143,7 +143,7 @@ namespace :setup do
     end
 
     desc "sets up nodejs"
-    task :sphinx, :roles => :alive_hosts do
+    task :nodejs, :roles => :alive_hosts do
         if CONFIG["services"]["nodejs"].nil? or CONFIG["services"]["nodejs"]["install"].empty?
             raise "There are no instructions for nodejs install in kowalski.yml"
         end
