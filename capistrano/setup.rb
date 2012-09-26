@@ -158,8 +158,6 @@ namespace :setup do
             "echo 'export #{path_line}' >> ~/.bash_profile"
         ]) * " && "
 
-        install_nodejs = "echo installing"
-
         cmd = ''
         cmd << "source /home/#{CONFIG["runners"]["user"]}/.bash_profile && "
         cmd << 'if [ "$( nodejs -v | grep \''+CONFIG["services"]["nodejs"]["version"].gsub(/\./, "\\.")+'\' )" ]; '
