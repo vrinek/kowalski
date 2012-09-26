@@ -142,6 +142,34 @@ namespace :setup do
         run cmd, :shell => false
     end
 
+    desc "sets up nodejs"
+    task :sphinx, :roles => :alive_hosts do
+        if CONFIG["services"]["nodejs"].nil? or CONFIG["services"]["nodejs"]["install"].empty?
+            raise "There are no instructions for nodejs install in kowalski.yml"
+        end
+
+        path_line = "PATH=\"/home/#{CONFIG["runners"]["user"]}/#{CONFIG["services"]["nodejs"]["bin_path"]}/:$PATH\""
+
+        install_nodejs = ([
+            "mkdir -p /home/#{CONFIG["runners"]["user"]}/src",
+            "rm -rf /home/#{CONFIG["runners"]["user"]}/src/nodejs",
+            "cd /home/#{CONFIG["runners"]["user"]}/src"
+        ] + CONFIG["services"]["nodejs"]["install"] + [
+            "echo 'export #{path_line}' >> ~/.bash_profile"
+        ]) * " && "
+
+        install_nodejs = "echo installing"
+
+        cmd = ''
+        cmd << "source /home/#{CONFIG["runners"]["user"]}/.bash_profile && "
+        cmd << 'if [ "$( nodejs -v | grep \''+CONFIG["services"]["nodejs"]["version"].gsub(/\./, "\\.")+'\' )" ]; '
+        cmd <<     'then echo "nodejs is OK"; '
+        cmd <<     "else #{install_nodejs}; "
+        cmd << 'fi'
+
+        run cmd, :shell => false
+    end
+
     desc "clone #{CONFIG["project"]} from #{CONFIG["git_clone"]}"
     task :project, :roles => :alive_hosts do
         git_daemon.up
