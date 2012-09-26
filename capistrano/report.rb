@@ -18,7 +18,8 @@ task :versions, :roles => :alive_hosts do
         "searchd --help | head -1" => [CONFIG["services"]["sphinx"]["version"]],
         "mongod --version | head -1" => [CONFIG["services"]["mongo"]["version"]],
         "redis-server --version" => [CONFIG["services"]["redis"]["version"]],
-        "elasticsearch -v" => [CONFIG["services"]["elastic"]["version"]]
+        "elasticsearch -v" => [CONFIG["services"]["elastic"]["version"]],
+        "node -v" => [CONFIG["services"]["nodejs"]["version"]]
     }.each do |command, version|
         cmd = " if [ \"$( #{command} | grep '#{version.map{|p| p.gsub(/\./, "\\.")} * '.*'}' )\" ]; "
         cmd += "then echo -e \"\\e[32m#{command.split.first} is OK\\e[0m\" ; else echo -e \"\\e[31mWARNING: should have version #{version * ' '} ($(#{command}))\\e[0m\"; fi "
