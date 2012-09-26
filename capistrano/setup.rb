@@ -162,7 +162,7 @@ namespace :setup do
 
         cmd = ''
         cmd << "source /home/#{CONFIG["runners"]["user"]}/.bash_profile && "
-        cmd << 'if [ "$( nodejs -v | grep \''+version_rx+'\' )" ]; '
+        cmd << 'if [ "$( node -v | grep \''+version_rx+'\' )" ]; '
         cmd <<     'then echo "nodejs is OK"; '
         cmd <<     "else #{install_nodejs}; "
         cmd << 'fi'
