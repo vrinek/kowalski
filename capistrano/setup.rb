@@ -158,9 +158,11 @@ namespace :setup do
             "echo 'export #{path_line}' >> ~/.bash_profile"
         ]) * " && "
 
+        version_rx = CONFIG["services"]["nodejs"]["version"].gsub(/\./, "\\.")
+
         cmd = ''
         cmd << "source /home/#{CONFIG["runners"]["user"]}/.bash_profile && "
-        cmd << 'if [ "$( nodejs -v | grep \''+CONFIG["services"]["nodejs"]["version"].gsub(/\./, "\\.")+'\' )" ]; '
+        cmd << 'if [ "$( nodejs -v | grep \''+version_rx+'\' )" ]; '
         cmd <<     'then echo "nodejs is OK"; '
         cmd <<     "else #{install_nodejs}; "
         cmd << 'fi'
