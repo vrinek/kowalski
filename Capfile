@@ -57,7 +57,7 @@ def up_hosts
     alive_hosts.each do |host|
         threads << Thread.new do
             netstat = `ssh #{CONFIG["runners"]["user"]}@#{host} 'netstat -nltp 2>/dev/null'`
-            if (%w[mysqld searchd mongod redis-server] - netstat.scan(/\d+\/([^\s]+)/).flatten).empty?
+            if (%w[mysqld mongod redis-server] - netstat.scan(/\d+\/([^\s]+)/).flatten).empty?
                 @up_hosts << host
                 print "."
             else

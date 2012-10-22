@@ -2,7 +2,7 @@ desc "reports the status of the services"
 task :status do
     run "cat ~/.#{CONFIG["project"]}_status"
 
-    cmd = %w[mysqld searchd mongod redis-server java].map do |service|
+    cmd = %w[mysqld mongod redis-server java].map do |service|
         "if [ \"$( netstat -nltp 2>/dev/null | grep #{service} )\" ]; then echo -e \"\\e[32m#{service} is up\\e[0m\"; else echo -e \"\\e[31m#{service} is down\\e[0m\"; fi"
     end.join('; ')
 
@@ -15,7 +15,6 @@ desc "reports versions"
 task :versions, :roles => :alive_hosts do
     {
         "ruby --version" => ["1.9.3p0"],
-        "searchd --help | head -1" => [CONFIG["services"]["sphinx"]["version"]],
         "mongod --version | head -1" => [CONFIG["services"]["mongo"]["version"]],
         "redis-server --version" => [CONFIG["services"]["redis"]["version"]],
         "elasticsearch -v" => [CONFIG["services"]["elastic"]["version"]],
